@@ -1,6 +1,6 @@
 """Defines the agent class."""
 from __future__ import annotations
-from typing import List, Tuple, Dict
+from typing import List, Dict
 
 
 class Agent:
@@ -11,6 +11,9 @@ class Agent:
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}-{self.id}"
+
+    def __hash__(self) -> int:
+        return hash(str(self))
 
     def __eq__(self, other: Agent) -> bool:
         return self.id == other.id
@@ -38,9 +41,6 @@ class Agent:
                                "preferred when no match exists")
         prefs = self.preferences()
         return prefs.index(other) > prefs.index(self.match)
-
-    def __hash__(self) -> int:
-        return hash(str(self))
 
 
 class Man(Agent):
