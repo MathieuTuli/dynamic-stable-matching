@@ -3,9 +3,9 @@ import sys
 
 import pytest
 
-from src.match import deferred_acceptance
-from src.agents import Man, Woman
-from .support import fail_if
+from match import deferred_acceptance
+from agents import Man, Woman
+from support import fail_if
 
 
 def test_deferred_accptance():

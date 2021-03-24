@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from .agents import Man, Woman
+from agents import Man, Woman
 
 
 def deferred_acceptance(men: List[Man], women: List[Woman],
