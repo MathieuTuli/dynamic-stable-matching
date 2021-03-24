@@ -1,12 +1,18 @@
 from typing import List, Tuple
 
-from agents import Man, Woman
+from .agents import Man, Woman
 
 
 def deferred_acceptance(men: List[Man], women: List[Woman],
                         method='MPDA') -> List[Tuple[Man, Woman]]:
     if method not in ['MPDA', 'WPDA']:
         raise ValueError('Unknown method: must be MPDA or WPDA')
+    if len(men) == 0:
+        raise ValueError('Men list is empty')
+    if len(women) == 0:
+        raise ValueError('Women list is empty')
+    if len(men) != len(women):
+        raise ValueError("Men and women list don't match length")
     proposers = men if method == 'MPDA' else women
     proposed_to = women if method == 'MPDA' else men
     unmatched = list(range(len(proposers)))
