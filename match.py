@@ -1,16 +1,15 @@
+from typing import List, Tuple
+
 from agents import Man, Woman
 
 
-def MPDA(man_list, woman_list):
-    # returns [(man1, woman1), (man2, woman2), ...]
+def MPDA(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
     pass
 
 
-def WPDA(man_list, woman_list):
-    # returns [(man1, woman1), (man2, woman2), ...]
+def WPDA(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
     pass
 
 
-def sex_optimal(man_list, woman_list):
-    # returns [(man1, woman1), (man2, woman2), ...]
+def sex_optimal(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
     pass

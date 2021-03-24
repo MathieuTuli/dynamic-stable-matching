@@ -1,7 +1,13 @@
 """Defines transition models wrt utilities."""
-def initialize_utilities(man_list, woman_list):
+from typing import List
+
+from agents import Man, Woman
+
+
+def initialize_utilities(men: List[Man], women: List[Woman]) -> None:
     pass
 
-def decay(man_list, woman_list):
-    # Update the respective utilities
+
+def decay(men: List[Man], women: List[Woman]) -> None:
+    """Update the respective utilities"""
     pass
