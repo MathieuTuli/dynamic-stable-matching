@@ -1,6 +1,7 @@
 """Defines the agent class."""
 from __future__ import annotations
 from typing import List, Dict
+from functools import lru_cache
 
 
 class Agent:
@@ -30,7 +31,7 @@ class Agent:
     def __leq__(self, other: Agent) -> bool:
         return self.id >= other.id
 
-    # TODO not efficient
+    @lru_cache
     def preferences(self) -> List[Agent]:
         return [k for k, v in sorted(self.utilities.items(),
                                      key=lambda x: x[1], reverse=True)]
