@@ -7,9 +7,9 @@ from agents import Man, Woman
 
 
 class MatchAlgorithms(Enum):
-    MPDA: 0
-    WPDA: 1
-    SEXOPT: 2
+    MPDA = 0
+    WPDA = 1
+    SEXOPT = 2
 
     def __str__(self):
         return self.name
