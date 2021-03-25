@@ -7,7 +7,7 @@ from functools import lru_cache
 class Agent:
     id: int = None
     id_counter: int = 0
-    utilities: Dict[Agent, float] = None
+    _utilities: Dict[Agent, float] = None
     match: Agent = None
 
     def __str__(self) -> str:
@@ -31,6 +31,17 @@ class Agent:
     def __leq__(self, other: Agent) -> bool:
         return self.id >= other.id
 
+    @property
+    def utilities(self) -> Dict[Agent, float]:
+        return self._utilities
+
+    @utilities.setter
+    def utilities(self, value: Dict[Agent, float]):
+        self._utilities = value
+        type(self).preferences.fget.cache_clear()
+    # TODO might actually cause problems if utilities change
+
+    @property
     @lru_cache
     def preferences(self) -> List[Agent]:
         return [k for k, v in sorted(self.utilities.items(),
@@ -40,8 +51,7 @@ class Agent:
         if self.match is None:
             raise RuntimeError("Attempting to check if someone else is " +
                                "preferred when no match exists")
-        prefs = self.preferences()
-        return prefs.index(other) > prefs.index(self.match)
+        return self.preferences.index(other) > self.preferences.index(self.match)
 
 
 class Man(Agent):

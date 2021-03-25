@@ -2,6 +2,7 @@ from typing import List, Tuple
 from functools import partial
 from enum import Enum
 
+import random
 
 from agents import Man, Woman
 
@@ -25,14 +26,15 @@ def deferred_acceptance(men: List[Man], women: List[Woman],
         raise ValueError('Women list is empty')
     if len(men) != len(women):
         raise ValueError("Men and women list don't match length")
+    N = len(men)
     proposers = men if method == 'MPDA' else women
     proposed_to = women if method == 'MPDA' else men
     unmatched = list(range(len(proposers)))
     while unmatched:
         idx = unmatched[0]
         incr = 0
-        while proposers[idx].match is None:
-            spouse_idx = proposed_to.index(proposers[idx].preferences()[incr])
+        while proposers[idx].match is None and incr < N:
+            spouse_idx = proposed_to.index(proposers[idx].preferences[incr])
             if proposed_to[spouse_idx].match is None:
                 proposed_to[spouse_idx].match = proposers[idx]
                 proposers[idx].match = proposed_to[spouse_idx]
