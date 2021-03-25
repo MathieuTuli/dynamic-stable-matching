@@ -29,23 +29,32 @@ def deferred_acceptance(men: List[Man], women: List[Woman],
     N = len(men)
     proposers = men if method == 'MPDA' else women
     proposed_to = women if method == 'MPDA' else men
-    unmatched = list(range(len(proposers)))
-    while unmatched:
-        idx = unmatched[0]
+    # unmatched = list(range(len(proposers)))
+    unmatched = N
+    for agent in proposers + proposed_to:
+        agent.match = None
+    while unmatched > 0:
+        # idx = unmatched[0]
+        idx = 0
+        while idx < N:
+            if proposers[idx].match is None:
+                break
+            idx += 1
         incr = 0
         while proposers[idx].match is None and incr < N:
             spouse_idx = proposed_to.index(proposers[idx].preferences[incr])
             if proposed_to[spouse_idx].match is None:
                 proposed_to[spouse_idx].match = proposers[idx]
                 proposers[idx].match = proposed_to[spouse_idx]
-                unmatched.pop(0)
+                # unmatched.pop(0)
+                unmatched -= 1
             elif proposed_to[spouse_idx].prefers(proposers[idx]):
                 proposed_to[spouse_idx].match.match = None
-                unmatched.append(proposers.index(
-                    proposed_to[spouse_idx].match))
+                # unmatched.append(proposers.index(
+                #     proposed_to[spouse_idx].match))
                 proposed_to[spouse_idx].match = proposers[idx]
                 proposers[idx].match = proposed_to[spouse_idx]
-                unmatched.pop(0)
+                # unmatched.pop(0)
             incr += 1
     if any([x.match is None for x in proposers + proposed_to]):
         for agent in proposers + proposed_to:
