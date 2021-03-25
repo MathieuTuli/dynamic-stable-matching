@@ -1,6 +1,18 @@
 from typing import List, Tuple
+from functools import partial
+from enum import Enum
+
 
 from agents import Man, Woman
+
+
+class MatchAlgorithms(Enum):
+    MPDA: 0
+    WPDA: 1
+    SEXOPT: 2
+
+    def __str__(self):
+        return self.name
 
 
 def deferred_acceptance(men: List[Man], women: List[Woman],
@@ -48,3 +60,7 @@ def deferred_acceptance(men: List[Man], women: List[Woman],
 
 def sex_optimal(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
     pass
+
+
+MPDA = partial(deferred_acceptance, method='MPDA')
+WPDA = partial(deferred_acceptance, method='WPDA')
