@@ -26,6 +26,11 @@ def initialize_utilities_from_array(men: List[Man], women: List[Woman], values: 
             count += 1
 
 
+def initialize_utilities_constant(men: List[Man], women: List[Woman], constant: float) -> None:
+    utilities_all = np.array([constant] * (2 * len(men) * len(women)))
+    initialize_utilities_from_array(men, women, utilities_all)
+
+
 def initialize_utilities_gaussian(men: List[Man], women: List[Woman], mu: float, sigma: float) -> None:
     utilities_all = np.random.normal(mu, sigma, 2 * len(men) * len(women))
     initialize_utilities_from_array(men, women, utilities_all)
@@ -75,8 +80,8 @@ def initialize_boredom_from_array(men: List[Man], women: List[Woman], values: np
             count += 1
 
 
-def initialize_boredom_zero(men: List[Man], women: List[Woman]) -> None:
-    boredom_all = np.zeros(2 * len(men) * len(women))
+def initialize_boredom_constant(men: List[Man], women: List[Woman], constant: float) -> None:
+    boredom_all = np.array([constant] * (2 * len(men) * len(women)))
     initialize_boredom_from_array(men, women, boredom_all)
 
 
