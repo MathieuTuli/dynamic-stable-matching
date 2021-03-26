@@ -16,8 +16,8 @@ def test_deferred_accptance():
         pytest.fail()
     except ValueError:
         pass
-    # _test_mpda()
-    # _test_wpda()
+    _test_mpda()
+    _test_wpda()
     _test_mpda_class()
 
 

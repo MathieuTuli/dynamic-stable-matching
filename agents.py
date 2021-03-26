@@ -61,7 +61,7 @@ class Agent:
         if self.match is None:
             raise RuntimeError("Attempting to check if someone else is " +
                                "preferred when no match exists")
-        return self.preferences.index(other) > \
+        return self.preferences.index(other) < \
             self.preferences.index(self.match)
 
 
