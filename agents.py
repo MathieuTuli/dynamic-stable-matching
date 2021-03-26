@@ -9,7 +9,6 @@ class Agent:
     id_counter: int = 0
     _utilities: Dict[Agent, float] = None
     match: Agent = None
-    _next: int = 0
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}-{self.id}"
@@ -21,26 +20,16 @@ class Agent:
         return self.id == other.id
 
     def __gt__(self, other: Agent) -> bool:
-        return self.id < other.id
-
-    def __geq__(self, other: Agent) -> bool:
-        return self.id <= other.id
-
-    def __lt__(self, other: Agent) -> bool:
         return self.id > other.id
 
-    def __leq__(self, other: Agent) -> bool:
+    def __ge__(self, other: Agent) -> bool:
         return self.id >= other.id
 
-    @property
-    def next(self) -> int:
-        ret = self._next
-        self._next += 1
-        return ret
+    def __lt__(self, other: Agent) -> bool:
+        return self.id < other.id
 
-    @next.setter
-    def next(self, value: int) -> None:
-        self._next = value
+    def __le__(self, other: Agent) -> bool:
+        return self.id <= other.id
 
     @property
     def utilities(self) -> Dict[Agent, float]:

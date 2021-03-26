@@ -4,6 +4,24 @@ from agents import Man, Woman
 from support import fail_if
 
 
+def test_attributes() -> None:
+    man1 = Man()
+    man2 = Man()
+    fail_if(man1 != man1)
+    fail_if(man2 != man2)
+    fail_if((man1 > man2) is not False)
+    fail_if((man1 >= man2) is not False)
+    fail_if((man1 >= man1) is not True)
+    fail_if((man1 < man2) is not True)
+    fail_if((man1 <= man2) is not True)
+    fail_if((man1 <= man1) is not True)
+    try:
+        man2.prefers(man1)
+        pytest.fail()
+    except RuntimeError:
+        pass
+
+
 def test_preferences() -> None:
     men = [Man(), Man(), Man()]
     women = [Woman(), Woman(), Woman()]

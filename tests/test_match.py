@@ -11,7 +11,15 @@ from support import fail_if
 def test_deferred_accptance():
     try:
         deferred_acceptance([], [])
+        pytest.fail()
+    except ValueError:
+        pass
+    try:
         deferred_acceptance([None, None], [None])
+        pytest.fail()
+    except ValueError:
+        pass
+    try:
         deferred_acceptance([None], [None, None])
         pytest.fail()
     except ValueError:
