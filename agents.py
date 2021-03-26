@@ -37,6 +37,7 @@ class Agent:
 
     @utilities.setter
     def utilities(self, value: Dict[Agent, float]) -> None:
+        """Reset preferences cache whenever utilities are set"""
         self._utilities = value
         type(self).preferences.fget.cache_clear()
 
@@ -50,6 +51,7 @@ class Agent:
         if self.match is None:
             raise RuntimeError("Attempting to check if someone else is " +
                                "preferred when no match exists")
+        # note a smaller index means better
         return self.preferences.index(other) < \
             self.preferences.index(self.match)
 

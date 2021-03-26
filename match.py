@@ -16,6 +16,15 @@ class MatchAlgorithms(Enum):
 
 def deferred_acceptance(men: List[Man], women: List[Woman],
                         method='MPDA') -> List[Tuple[Man, Woman]]:
+    """
+    The deferred accptance algorithm for stable matching
+    inputs:
+        @men: list of Man objects. Must be length N
+        @women: list of Woman objects. Must be length N
+        @method: string, one of ['MPDA', 'WPDA'].
+    returns:
+        @pairs: list of (Man, Woman) tuples indicating pairs
+    """
     if method not in ['MPDA', 'WPDA']:
         raise ValueError('Unknown method: must be MPDA or WPDA')
     N = len(men)
