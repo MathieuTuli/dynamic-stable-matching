@@ -7,7 +7,8 @@ from functools import lru_cache
 class Agent:
     id: int = None
     id_counter: int = 0
-    _utilities: Dict[Agent, float] = None
+    _utilities: Dict[Agent, float] = {}
+    _boredom: Dict[Agent, float] = {}
     match: Agent = None
 
     def __str__(self) -> str:
@@ -34,6 +35,10 @@ class Agent:
     @property
     def utilities(self) -> Dict[Agent, float]:
         return self._utilities
+    
+    @property
+    def boredom(self) -> Dict[Agent, float]:
+        return self._boredom
 
     @utilities.setter
     def utilities(self, value: Dict[Agent, float]) -> None:
