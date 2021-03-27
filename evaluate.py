@@ -26,7 +26,8 @@ class Evaluator():
 
             Evaluator._next_timestep_unaggregated = len(history)
 
-    def evaluate_average(self, history: List[List[Tuple[Man, Woman]]]) -> float:
+    def evaluate_average(self,
+                         history: List[List[Tuple[Man, Woman]]]) -> float:
         """
         Evaluating the consistency of matched pairs across timesteps
         inputs:
@@ -49,7 +50,8 @@ class Evaluator():
         total_timesteps = Evaluator.n/2 * len(history)
         return total_timesteps/num_match
 
-    def evaluate_longest(self, history: List[List[Tuple[Man, Woman]]]) -> float:
+    def evaluate_longest(self,
+                         history: List[List[Tuple[Man, Woman]]]) -> float:
         """
         Evaluating the consistency of matched pairs across timesteps
         inputs:
