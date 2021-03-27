@@ -5,11 +5,12 @@ from functools import lru_cache
 
 
 class Agent:
-    id: int = None
     id_counter: int = 0
-    _utilities: Dict[Agent, float] = {}
-    _boredom: Dict[Agent, float] = {}
-    match: Agent = None
+
+    def __init__(self) -> None:
+        self._utilities: Dict[Agent, float] = {}
+        self.excitement: Dict[Agent, float] = {}
+        self.match: Agent = None
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}-{self.id}"
@@ -35,10 +36,6 @@ class Agent:
     @property
     def utilities(self) -> Dict[Agent, float]:
         return self._utilities
-    
-    @property
-    def boredom(self) -> Dict[Agent, float]:
-        return self._boredom
 
     @utilities.setter
     def utilities(self, value: Dict[Agent, float]) -> None:
@@ -47,7 +44,7 @@ class Agent:
         type(self).preferences.fget.cache_clear()
 
     @property
-    @lru_cache
+    # @lru_cache
     def preferences(self) -> List[Agent]:
         return [k for k, v in sorted(self.utilities.items(),
                                      key=lambda x: x[1], reverse=True)]
@@ -63,11 +60,13 @@ class Agent:
 
 class Man(Agent):
     def __init__(self) -> None:
+        super(Man, self).__init__()
         self.id = Man.id_counter
         Man.id_counter += 1
 
 
 class Woman(Agent):
     def __init__(self) -> None:
+        super(Woman, self).__init__()
         self.id = Woman.id_counter
         Woman.id_counter += 1
