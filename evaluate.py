@@ -1,29 +1,27 @@
 from typing import List, Tuple
 from collections import defaultdict
 
-from agents import Man, Woman
-
 
 class Evaluator():
-    _history_dict: defaultdict[Tuple[int, int], List[int]] = defaultdict(list)
-    _next_timestep_unaggregated = 0
-
     def __init__(self, num_agents):
-        self.n = num_agents  # number of total agents, including both men and women
+        self.history_dict: defaultdict[Tuple[int, int], List[int]] = \
+            defaultdict(list)
+        self.next_timestep_unaggregated = 0
+        self.n = num_agents  # number of total agents, both men and women
 
     def aggregate(self, history: List[List[Tuple[int, int]]]) -> None:
         """
         aggregate the matchingt history to __history_dict
         inputs:
-            @histroy: list of matched pairs at each timestep
+            @history: list of matched pairs at each timestep
         """
-        if len(history) >= Evaluator._next_timestep_unaggregated:
-            for matches in history[Evaluator._next_timestep_unaggregated:]:
+        if len(history) >= self.next_timestep_unaggregated:
+            for matches in history[self.next_timestep_unaggregated:]:
                 for index, (man_id, woman_id) in enumerate(matches):
-                    Evaluator._history_dict[(man_id, woman_id)].append(
-                        Evaluator._next_timestep_unaggregated)
+                    self.history_dict[(man_id, woman_id)].append(
+                        self.next_timestep_unaggregated)
 
-            Evaluator._next_timestep_unaggregated = len(history)
+            self.next_timestep_unaggregated = len(history)
 
     def evaluate_average(self,
                          history: List[List[Tuple[int, int]]]) -> float:
@@ -39,7 +37,7 @@ class Evaluator():
         self.aggregate(history)
 
         num_match = 0
-        for timestep in Evaluator._history_dict.values():
+        for timestep in self.history_dict.values():
             cur_timestep = -2
             for timestep in timestep:
                 if timestep != cur_timestep+1:
@@ -64,7 +62,7 @@ class Evaluator():
 
         longest = 1
         cur = 1
-        for timesteps in Evaluator._history_dict.values():
+        for timesteps in self.history_dict.values():
             cur_timestep = -2
             for timestep in timesteps:
                 if timestep == cur_timestep+1:
