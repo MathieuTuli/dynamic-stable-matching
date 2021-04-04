@@ -9,7 +9,7 @@ class Evaluator():
     _next_timestep_unaggregated = 0
 
     def __init__(self, num_agents):
-        self.n = num_agents # number of total agents, including both men and women
+        self.n = num_agents  # number of total agents, including both men and women
 
     def aggregate(self, history: List[List[Tuple[int, int]]]) -> None:
         """

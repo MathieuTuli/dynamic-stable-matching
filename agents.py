@@ -4,11 +4,26 @@ from typing import List, Dict
 from functools import lru_cache
 
 
+class Utilities(dict):
+    @property
+    @lru_cache()
+    def preferences(self) -> List[Agent]:
+        return [k for k, v in sorted(self.items(),
+                                     key=lambda x: x[1], reverse=True)]
+
+    def __hash__(self) -> int:
+        return hash(str(self))
+
+    def __setitem__(self, key: Agent, value: float):
+        super().__setitem__(key, value)
+        type(self).preferences.fget.cache_clear()
+
+
 class Agent:
     id_counter: int = 0
 
     def __init__(self) -> None:
-        self._utilities: Dict[Agent, float] = {}
+        self.__utilities: Utilities = Utilities()
         self.excitement: Dict[Agent, float] = {}
         self.match: Agent = None
 
@@ -34,20 +49,16 @@ class Agent:
         return self.id <= other.id
 
     @property
-    def utilities(self) -> Dict[Agent, float]:
-        return self._utilities
+    def utilities(self) -> Utilities:
+        return self.__utilities
 
     @utilities.setter
-    def utilities(self, value: Dict[Agent, float]) -> None:
-        """Reset preferences cache whenever utilities are set"""
-        self._utilities = value
-        type(self).preferences.fget.cache_clear()
+    def utilities(self, value: Dict[Agent, float]) -> Utilities:
+        self.__utilities = Utilities(value)
 
     @property
-    # @lru_cache
     def preferences(self) -> List[Agent]:
-        return [k for k, v in sorted(self.utilities.items(),
-                                     key=lambda x: x[1], reverse=True)]
+        return self.__utilities.preferences
 
     def prefers(self, other: Agent) -> bool:
         if self.match is None:
