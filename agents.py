@@ -25,8 +25,9 @@ class Agent:
     id_counter: int = 0
 
     def __init__(self) -> None:
-        self.__utilities: Utilities = Utilities()
-        self.excitement: Dict[Agent, float] = {}
+        # self.__utilities: Utilities = Utilities()
+        self.utilities: Dict[Agent, float] = dict()
+        self.excitement: Dict[Agent, float] = dict()
         self.match: Agent = None
 
     def __str__(self) -> str:
@@ -50,13 +51,13 @@ class Agent:
     def __le__(self, other: Agent) -> bool:
         return self.id <= other.id
 
-    @property
-    def utilities(self) -> Utilities:
-        return self.__utilities
+    # @property
+    # def utilities(self) -> Utilities:
+    #     return self.__utilities
 
-    @utilities.setter
-    def utilities(self, value: Dict[Agent, float]) -> Utilities:
-        self.__utilities = Utilities(value)
+    # @utilities.setter
+    # def utilities(self, value: Dict[Agent, float]) -> Utilities:
+    #     self.__utilities = Utilities(value)
 
     def normalize_utilities(self) -> None:
         utilities_sum = np.sum(list(self.__utilities.values()))
@@ -65,7 +66,9 @@ class Agent:
 
     @property
     def preferences(self) -> List[Agent]:
-        return self.__utilities.preferences
+        # return self.__utilities.preferences
+        return [k for k, v in sorted(self.utilities.items(),
+                                     key=lambda x: x[1], reverse=True)]
 
     def prefers(self, other: Agent) -> bool:
         if self.match is None:

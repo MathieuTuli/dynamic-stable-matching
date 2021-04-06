@@ -8,4 +8,4 @@ initialization:
   name: uniform_random
 excitement:
   name: constant
-  value: 1
+  value: 0.5
