@@ -60,9 +60,9 @@ class Agent:
     #     self.__utilities = Utilities(value)
 
     def normalize_utilities(self) -> None:
-        utilities_sum = np.sum(list(self.__utilities.values()))
-        for agent, value in self.__utilities.items():
-            self.__utilities[agent] = value / utilities_sum
+        utilities_sum = np.sum(list(self.utilities.values()))
+        for agent, value in self.utilities.items():
+            self.utilities[agent] = value / utilities_sum
 
     @property
     def preferences(self) -> List[Agent]:
