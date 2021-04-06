@@ -1,0 +1,12 @@
+size: 10
+seed: 1000
+horizon: 10
+
+matching: MPDA
+update: match
+initialization:
+  name: constant
+  value: 10
+excitement:
+  name: constant
+  value: 0.5

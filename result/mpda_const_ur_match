@@ -1,7 +1,8 @@
 Matching algorithm: MPDA
+Update method: match
 Number of agents in each group: 10
 Number of timesteps: 10
-constant initialization + constant excitement
+constant initialization + uniform_random excitement
 Preferences: 
 Timestep0: 
 Men's preferences:

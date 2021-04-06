@@ -106,24 +106,25 @@ def main(args: Namespace):
             f'Unknown updating transition method {args.update}'
         )
 
-    # print("Matching algorithm: " + args.matching)
-    # print("Number of agents in each group: " + str(args.size))
-    # print("Number of timesteps: "  + str(args.horizon))
-    # print(args.initialization['name'] + " initialization + " + args.excitement['name'] + " excitement")
+    print("Matching algorithm: " + args.matching)
+    print("Update method: "  + args.update)
+    print("Number of agents in each group: " + str(args.size))
+    print("Number of timesteps: "  + str(args.horizon))
+    print(args.initialization['name'] + " initialization + " + args.excitement['name'] + " excitement")
 
     evaluator = Evaluator(args.size)
     averages = []
     longest = []
-    # print("Preferences: ")
+    print("Preferences: ")
     for i in range(args.horizon):
 
-        # print("Timestep" + str(i) + ": ")
-        # print("Men's preferences:")
-        # for man in men:
-        #     print([w.id for w in man.preferences])
-        # print("Women's preferences:")
-        # for woman in women:
-        #     print([m.id for m in woman.preferences])
+        print("Timestep" + str(i) + ": ")
+        print("Men's preferences:")
+        for man in men:
+            print([w.id for w in man.preferences])
+        print("Women's preferences:")
+        for woman in women:
+            print([m.id for m in woman.preferences])
 
         pairs = matching_algorithm(men, women)
         history.append([(pair[0].id, pair[1].id) for pair in pairs])
@@ -132,16 +133,16 @@ def main(args: Namespace):
         longest.append(evaluator.evaluate_longest(history))
     consistency_rate = evaluator.evaluate_consistency_rate(history)
 
-    # print("Matches: ")
-    # for i, matches in enumerate(history):
-    #     print("Timestep " + str(i)  + ": " , end='')
-    #     print(matches)
-    # print("Average number of timestep staying married: ", end='')
-    # print(averages)
-    # print("Largest number of timestep staying married: ", end='')
-    # print(longest)
-    # print("Proportion of marriage persisted: ", end='')
-    # print(consistency_rate)
+    print("Matches: ")
+    for i, matches in enumerate(history):
+        print("Timestep " + str(i)  + ": " , end='')
+        print(matches)
+    print("Average number of timestep staying married: ", end='')
+    print(averages)
+    print("Largest number of timestep staying married: ", end='')
+    print(longest)
+    print("Proportion of marriage persisted: ", end='')
+    print(consistency_rate)
 
 
 if __name__ == "__main__":
