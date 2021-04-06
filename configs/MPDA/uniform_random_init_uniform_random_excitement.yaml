@@ -1,0 +1,10 @@
+size: 10
+seed: 1000
+horizon: 10
+
+matching: MPDA
+update: regular
+initialization:
+  name: uniform_random
+excitement:
+  name: uniform_random
