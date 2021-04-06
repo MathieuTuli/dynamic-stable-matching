@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import List, Dict
 from functools import lru_cache
 
+import numpy as np
+
 
 class Utilities(dict):
     @property
@@ -55,6 +57,11 @@ class Agent:
     @utilities.setter
     def utilities(self, value: Dict[Agent, float]) -> Utilities:
         self.__utilities = Utilities(value)
+
+    def normalize_utilities(self) -> None:
+        utilities_sum = np.sum(list(self.__utilities.values()))
+        for agent, value in self.__utilities.items():
+            self.__utilities[agent] = value / utilities_sum
 
     @property
     def preferences(self) -> List[Agent]:
