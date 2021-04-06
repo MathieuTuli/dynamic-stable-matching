@@ -44,7 +44,7 @@ class Evaluator():
                     num_match += 1
                 cur_timestep = timestep
 
-        total_timesteps = self.n/2 * len(history)
+        total_timesteps = self.n * len(history)
         return float(total_timesteps)/num_match
 
     def evaluate_longest(self,
@@ -54,7 +54,7 @@ class Evaluator():
         inputs:
             @history: list of matched pairs at each timestep
         returns:
-            @consistency: float indicating the average of number of timesteps
+            @consistency: float indicating the largest number of timesteps
                         perserved for each match;
         """
 
@@ -77,3 +77,29 @@ class Evaluator():
             cur = 1
 
         return longest
+
+    def evaluate_consistency_rate(self,
+                         history: List[List[Tuple[int, int]]]) -> List[float]:
+        
+        """
+        Evaluating the consistency of matched pairs across timesteps
+        inputs:
+            @history: list of matched pairs at each timestep
+        returns:
+            @consistency: list of float indicating proportion of marriage
+                          that stay consistent with last timestep;
+        """
+
+        prev_matches = history[0]
+        consistency_rate = [0]
+        count = 0
+        num_pairs = len(prev_matches)
+        for matches in history[1:]:
+            for match in matches:
+                if (match in prev_matches):
+                    count += 1
+            consistency_rate.append(count/num_pairs)
+            count = 0
+            prev_matches = matches
+        return consistency_rate
+            
