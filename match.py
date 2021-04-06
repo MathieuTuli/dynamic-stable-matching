@@ -2,6 +2,10 @@ from typing import List, Tuple
 from functools import partial
 from enum import Enum
 
+import itertools
+
+import numpy as np
+
 from agents import Man, Woman
 
 
@@ -12,6 +16,90 @@ class MatchAlgorithms(Enum):
 
     def __str__(self):
         return self.name
+
+
+def brute_force(men: List[Man], women: List[Woman],
+                method='welfare-optimal') -> List[Tuple[Man, Woman]]:
+    print("Computing brute force pairs")
+    # pairings = [
+    #     (list(zip(perm, women)),
+    #      sum([man.utilities[woman] + woman.utilities[man]
+    #           for man, woman in list(zip(perm, women))])) for
+    #     perm in itertools.permutations(men, len(women))]
+    pairings = [list(zip(perm, women)) for
+                perm in itertools.permutations(men, len(women))]
+
+    def get_welfare_optimal_paring(pairings: List[List[Tuple[Man, Woman]]]
+                                   ) -> List[Tuple[Man, Woman]]:
+        best_welfare = -1
+        best_pairing = None
+        for pairing in pairings:
+            welfare = sum([man.utilities[woman] + woman.utilities[man]
+                           for man, woman in pairing])
+            if np.greater(welfare, best_welfare):
+                best_welfare = welfare
+                best_pairing = pairing
+        return best_pairing
+
+    def get_stable_pairs(pairings: List[List[Tuple[Man, Woman]]],
+                         men: List[Man],
+                         women: List[Woman]) -> List[Tuple[Man, Woman]]:
+        stable_pairs = list()
+        min_blocking_pair = None
+        min_blocking_count = len(men) + 1
+        for pairing in pairings:
+            print([(a.id, b.id) for a, b in pairing])
+            blocking = list()
+            for paired_man, paired_woman in pairing:
+                for man in men:
+                    if man == paired_man:
+                        continue
+                    for m, w in pairing:
+                        if m == man:
+                            other_woman = w
+                            break
+                    blocking.append(
+                        np.greater(paired_woman.utilities[man],
+                                   paired_woman.utilities[paired_man])
+                        and
+                        np.greater(man.utilities[paired_woman],
+                                   man.utilities[other_woman]))
+                for woman in women:
+                    if woman == paired_woman:
+                        continue
+                    for m, w in pairing:
+                        if w == woman:
+                            other_man = m
+                            break
+                    blocking.append(
+                        np.greater(paired_man.utilities[woman],
+                                   paired_man.utilities[paired_woman])
+                        and
+                        np.greater(woman.utilities[paired_man],
+                                   woman.utilities[other_man]))
+            if not any(blocking):
+                stable_pairs.append(pairing)
+            num_blocking = np.sum(np.array(blocking) == True)
+            if num_blocking < min_blocking_count:
+                min_blocking_pair = pairing
+
+        return stable_pairs if len(stable_pairs) > 0 else min_blocking_pair
+
+    if method == 'welfare-optimal':
+        pairing = get_welfare_optimal_paring(pairings)
+        for pair in pairing:
+            pair[0].match = pair[1]
+            pair[1].match = pair[0]
+        return pairing
+    elif method == 'stable-matching':
+        stable_pairs = get_stable_pairs(pairings, men, women)
+        pairing = get_welfare_optimal_paring(stable_pairs)
+        for pair in pairing:
+            pair[0].match = pair[1]
+            pair[1].match = pair[0]
+        return pairing
+    else:
+        raise ValueError("Unkown brute force method")
 
 
 def deferred_acceptance(men: List[Man], women: List[Woman],
@@ -75,3 +163,5 @@ def sex_optimal(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
 
 MPDA = partial(deferred_acceptance, method='MPDA')
 WPDA = partial(deferred_acceptance, method='WPDA')
+BFWO = partial(brute_force, method='welfare-optimal')
+BFSM = partial(brute_force, method='stable-matching')
