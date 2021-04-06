@@ -31,13 +31,20 @@ parser.add_argument("-s", "--size", type=int,
                     default=10, help="Population size")
 parser.add_argument("--initialization",
                     type=dict,
+                    default=None,
                     help='Initialization type')
 parser.add_argument("--excitement",
                     type=dict,
+                    default=None,
                     help='Excitement initialization type')
 parser.add_argument("--matching",
                     default='MPDA',
+                    choices=['MPDA', 'WPDA'],
                     help='Matching algorithm')
+parser.add_argument("--update",
+                    default='regular',
+                    choices=['regular', 'match', 'match_decay_only'],
+                    help='Dynamic updating algorithm')
 parser.add_argument("--seed", default=1000,
                     type=int,
                     help='Seed')
@@ -58,26 +65,51 @@ def main(args: Namespace):
     women = [Woman() for i in range(args.size)]
     if args.initialization['name'] == 'constant':
         initialize_utilities_constant(
-            men, women, args.initialization['value'])
-    elif args.init == ['']:
-        ...
+            men, women, args.initialization['value']
+        )
+    elif args.initialization['name'] == 'gaussian':
+        initialize_excitement_gaussian(
+            men, women, args.initialization['mean'], args.initialization['var']
+        )
+    elif args.initialization['name'] == 'uniform_random':
+        initialize_excitement_uniform_random(
+            men, women, 0.0, 1.0
+        )
     else:
         raise ValueError(f'Uknown initialization method {args.init}')
-    if args.excitement['name'] == 'gaussian':
+    if args.excitement['name'] == 'constant':
+        initialize_excitement_constant(
+            men, women, args.excitement['value']
+        )
+    elif args.excitement['name'] == 'gaussian':
         initialize_excitement_gaussian(
-            men, women, args.excitement['mean'], args.excitement['var'])
-    elif args.init == ['']:
-        ...
+            men, women, args.excitement['mean'], args.excitement['var']
+        )
+    elif args.excitement['name'] == ['uniform_random']:
+        initialize_excitement_uniform_random(
+            men, women, 0.0, 1.0
+        )
     else:
         raise ValueError(
-            f'Uknown excitement initialization method {args.init}')
+            f'Uknown excitement initialization method {args.excitement}'
+        )
     matching_algorithm = MPDA if args.matching == 'MPDA' else\
         WPDA if args.matchings == 'WPDA' else None
+    if args.update == 'regular':
+        update_algorithm = update_utilities
+    elif args.update == 'match':
+        update_algorithm = update_utilities_with_match
+    elif args.update == 'match_decay_only':
+        update_algorithm = update_utilities_with_match_decay_only
+    else:
+        raise ValueError(
+            f'Unknown updating transition method {args.update}'
+        )
     # evaluator = Evaluator(args.size)
     for i in range(args.horizon):
         pairs = matching_algorithm(men, women)
         history.append([(pair[0].id, pair[1].id) for pair in pairs])
-        update_utilities(men, women)
+        update_algorithm(men, women)
         # evaluator.evaluate_average()
 
 
