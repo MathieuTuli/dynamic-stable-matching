@@ -74,7 +74,7 @@ def update_utilities_with_match(men: List[Man], women: List[Woman]) -> None:
 def update_utilities_with_match_decay_only(men: List[Man],
                                            women: List[Woman]) -> None:
     """Decay the utilities matched couples have for each other."""
-    for agent in [men + women]:
+    for agent in men + women:
         agent.utilities[agent.match] *= max(1,
                                             1 - agent.excitement[agent.match])
     normalize_utilities(men, women)
