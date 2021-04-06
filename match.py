@@ -48,7 +48,6 @@ def brute_force(men: List[Man], women: List[Woman],
         min_blocking_pair = None
         min_blocking_count = len(men) + 1
         for pairing in pairings:
-            print([(a.id, b.id) for a, b in pairing])
             blocking = list()
             for paired_man, paired_woman in pairing:
                 for man in men:
