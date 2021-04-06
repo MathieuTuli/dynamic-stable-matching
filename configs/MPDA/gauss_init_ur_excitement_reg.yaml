@@ -5,9 +5,8 @@ horizon: 10
 matching: MPDA
 update: regular
 initialization:
-  name: constant
-  value: 0
-excitement:
   name: gaussian
-  mean: 0
+  mean: 10
   var: 1
+excitement:
+  name: uniform_random

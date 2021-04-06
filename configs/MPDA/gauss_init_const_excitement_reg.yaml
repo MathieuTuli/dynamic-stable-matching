@@ -1,0 +1,13 @@
+size: 10
+seed: 1000
+horizon: 10
+
+matching: MPDA
+update: regular
+initialization:
+  name: gaussian
+  mean: 10
+  var: 1
+excitement:
+  name: constant
+  value: 0.5
