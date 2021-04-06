@@ -68,12 +68,12 @@ def main(args: Namespace):
             men, women, args.initialization['value']
         )
     elif args.initialization['name'] == 'gaussian':
-        initialize_excitement_gaussian(
+        initialize_utilities_gaussian(
             men, women, args.initialization['mean'], args.initialization['var']
         )
     elif args.initialization['name'] == 'uniform_random':
-        initialize_excitement_uniform_random(
-            men, women, 9.5, 10.5
+        initialize_utilities_uniform_random(
+            men, women, 0.0, 1.0
         )
     else:
         raise ValueError(f'Uknown initialization method {args.init}')
