@@ -27,12 +27,18 @@ def normalize_utilities(men, women):
         agent.normalize_utilities()
 
 
+def update_preferences(men, women):
+    for agent in men + women:
+        agent.update_preferences()
+
+
 def initialize_utilities_constant(men: List[Man],
                                   women: List[Woman],
                                   constant: float) -> None:
     utilities_all = np.array([constant] * (2 * len(men) * len(women)))
     initialize_utilities_from_array(men, women, utilities_all)
     normalize_utilities(men, women)
+    update_preferences(men, women)
 
 
 def initialize_utilities_gaussian(men: List[Man],
@@ -44,6 +50,7 @@ def initialize_utilities_gaussian(men: List[Man],
         utilities_all[utilities_all < 0] = 0
     initialize_utilities_from_array(men, women, utilities_all)
     normalize_utilities(men, women)
+    update_preferences(men, women)
 
 
 def initialize_utilities_uniform_random(men: List[Man],
@@ -55,6 +62,7 @@ def initialize_utilities_uniform_random(men: List[Man],
         utilities_all[utilities_all < 0] = 0
     initialize_utilities_from_array(men, women, utilities_all)
     normalize_utilities(men, women)
+    update_preferences(men, women)
 
 
 def update_utilities_with_match(men: List[Man], women: List[Woman]) -> None:
@@ -63,21 +71,23 @@ def update_utilities_with_match(men: List[Man], women: List[Woman]) -> None:
     for man in men:
         for woman in women:
             if man.match == woman:
-                man.utilities[woman] *= max(1, 1 - man.excitement[woman])
-                woman.utilities[man] *= max(1, 1 - woman.excitement[man])
+                man.utilities[woman] *= min(1, 1 - man.excitement[woman])
+                woman.utilities[man] *= min(1, 1 - woman.excitement[man])
             else:
-                man.utilities[woman] *= min(1, 1 + man.excitement[woman])
-                woman.utilities[man] *= min(1, 1 + woman.excitement[man])
+                man.utilities[woman] *= max(1, 1 + man.excitement[woman])
+                woman.utilities[man] *= max(1, 1 + woman.excitement[man])
     normalize_utilities(men, women)
+    update_preferences(men, women)
 
 
 def update_utilities_with_match_decay_only(men: List[Man],
                                            women: List[Woman]) -> None:
     """Decay the utilities matched couples have for each other."""
     for agent in men + women:
-        agent.utilities[agent.match] *= max(1,
+        agent.utilities[agent.match] *= min(1,
                                             1 - agent.excitement[agent.match])
     normalize_utilities(men, women)
+    update_preferences(men, women)
 
 
 def update_utilities(men: List[Man], women: List[Woman]) -> None:
@@ -87,6 +97,7 @@ def update_utilities(men: List[Man], women: List[Woman]) -> None:
             man.utilities[woman] *= max(0, 1 + man.excitement[woman])
             woman.utilities[man] *= max(0, 1 + woman.excitement[man])
     normalize_utilities(men, women)
+    update_preferences(men, women)
 
 
 def initialize_excitement_from_array(men: List[Man],

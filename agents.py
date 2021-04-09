@@ -27,6 +27,7 @@ class Agent:
     def __init__(self) -> None:
         # self.__utilities: Utilities = Utilities()
         self.utilities: Dict[Agent, float] = dict()
+        self.preferences: List[Agent] = list()
         self.excitement: Dict[Agent, float] = dict()
         self.match: Agent = None
 
@@ -64,11 +65,16 @@ class Agent:
         for agent, value in self.utilities.items():
             self.utilities[agent] = value / utilities_sum
 
-    @property
-    def preferences(self) -> List[Agent]:
+    def update_preferences(self) -> None:
+        self.preferences = [k for k, v in sorted(self.utilities.items(),
+            key=lambda x: x[1], reverse=True)]
+        
+
+    # @property
+    # def preferences(self) -> List[Agent]:
         # return self.__utilities.preferences
-        return [k for k, v in sorted(self.utilities.items(),
-                                     key=lambda x: x[1], reverse=True)]
+        # return [k for k, v in sorted(self.utilities.items(),
+        #                              key=lambda x: x[1], reverse=True)]
 
     def prefers(self, other: Agent) -> bool:
         if self.match is None:
