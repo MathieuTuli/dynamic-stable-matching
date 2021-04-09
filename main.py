@@ -120,10 +120,10 @@ def main(args: Namespace):
         print("Timestep" + str(i) + ": ")
         print("Men's preferences:")
         for man in men:
-            print([w.id for w in man.preferences])
+            print([(w.id, man.utilities[w]) for w in man.preferences])
         print("Women's preferences:")
         for woman in women:
-            print([m.id for m in woman.preferences])
+            print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
         pairs = matching_algorithm(men, women)
         history.append([(pair[0].id, pair[1].id) for pair in pairs])
