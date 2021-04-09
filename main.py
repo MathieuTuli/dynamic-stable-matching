@@ -20,7 +20,7 @@ from dynamics import (
 from evaluate import Evaluator
 from utils import config_file_parser
 from agents import Man, Woman
-from match import MPDA, WPDA
+from match import MPDA, WPDA, BFWO, BFSM
 
 
 parser = ArgumentParser(__doc__)
@@ -39,7 +39,7 @@ parser.add_argument("--excitement",
                     help='Excitement initialization type')
 parser.add_argument("--matching",
                     default='MPDA',
-                    choices=['MPDA', 'WPDA'],
+                    choices=['MPDA', 'WPDA', 'BFWO', 'BFSM'],
                     help='Matching algorithm')
 parser.add_argument("--update",
                     default='regular',
@@ -94,7 +94,8 @@ def main(args: Namespace):
             f'Uknown excitement initialization method {args.excitement}'
         )
     matching_algorithm = MPDA if args.matching == 'MPDA' else\
-        WPDA if args.matchings == 'WPDA' else None
+        WPDA if args.matching == 'WPDA' else BFWO if args.matching == 'BFWO' \
+        else BFSM if args.matching == 'BFSM' else None
     if args.update == 'regular':
         update_algorithm = update_utilities
     elif args.update == 'match':
@@ -108,8 +109,9 @@ def main(args: Namespace):
 
     print("Matching algorithm: " + args.matching)
     print("Number of agents in each group: " + str(args.size))
-    print("Number of timesteps: "  + str(args.horizon))
-    print(args.initialization['name'] + " initialization + " + args.excitement['name'] + " excitement")
+    print("Number of timesteps: " + str(args.horizon))
+    print(args.initialization['name'] + " initialization + " +
+          args.excitement['name'] + " excitement")
 
     evaluator = Evaluator(args.size)
     averages = []
@@ -117,7 +119,7 @@ def main(args: Namespace):
     print("Preferences: ")
     for i in range(args.horizon):
 
-        print("Timestep" + str(i) + ": ")
+        print("Timestep " + str(i) + ": ")
         print("Men's preferences:")
         for man in men:
             print([(w.id, man.utilities[w]) for w in man.preferences])
@@ -134,7 +136,7 @@ def main(args: Namespace):
 
     print("Matches: ")
     for i, matches in enumerate(history):
-        print("Timestep " + str(i)  + ": " , end='')
+        print("Timestep " + str(i) + ": ", end='')
         print(matches)
     print("Average number of timestep staying married: ", end='')
     print(averages)
