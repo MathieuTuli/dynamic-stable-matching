@@ -1,0 +1,13 @@
+size: 4
+seed: 1000
+horizon: 1
+
+matching: BFSM
+update: match
+initialization:
+  name: gaussian
+  mean: 0
+  var: 1
+excitement:
+  name: constant
+  value: 0.5
