@@ -20,7 +20,7 @@ class MatchAlgorithms(Enum):
 
 def brute_force(men: List[Man], women: List[Woman],
                 method='welfare-optimal') -> List[Tuple[Man, Woman]]:
-    print("Computing brute force pairs")
+    # print("Computing brute force pairs")
     # pairings = [
     #     (list(zip(perm, women)),
     #      sum([man.utilities[woman] + woman.utilities[man]
