@@ -130,25 +130,25 @@ def main(args: Namespace):
         print("Preferences: ")
     data['preferences'] = dict()
     for i in range(args.horizon):
-        data['preferences']['timestep'] = i
-        data['preferences']['men'] = dict()
-        data['preferences']['women'] = dict()
+        data['preferences'][i] = dict()
+        data['preferences'][i]['men'] = dict()
+        data['preferences'][i]['women'] = dict()
         if args.print:
             print("Timestep " + str(i) + ": ")
             print("Men's preferences:")
         for man in men:
-            data['preferences']['men'][man.id] = \
+            data['preferences'][i]['men'][man.id] = \
                 [w.id for w in man.preferences]
             if args.print:
-                print(data['preferences']['men'][man.id])
+                print(data['preferences'][i]['men'][man.id])
             # print([(w.id, man.utilities[w]) for w in man.preferences])
         if args.print:
             print("Women's preferences:")
         for woman in women:
-            data['preferences']['women'][woman.id] = \
+            data['preferences'][i]['women'][woman.id] = \
                 [m.id for m in woman.preferences]
             if args.print:
-                print(data['preferences']['women'][woman.id])
+                print(data['preferences'][i]['women'][woman.id])
             # print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
         pairs = matching_algorithm(men, women)
@@ -160,13 +160,12 @@ def main(args: Namespace):
 
     if args.print:
         print("Matches: ")
-    data['match_history'] = dict()
+    data['matches'] = dict()
     for i, matches in enumerate(history):
         if args.print:
             print("Timestep " + str(i) + ": ", end='')
             print(matches)
-        data['match_history']['timestep'] = i
-        data['match_history']['matches'] = matches
+        data['matches'][i] = matches
     if args.print:
         print("Average number of timestep staying married: ", end='')
         print(averages)
@@ -193,9 +192,9 @@ def save(args, data) -> None:
     for k, v in args.initialization.items():
         filename += f'{k}:{v},'
     filename += '_excitement='
-    filename += '.json'
     for k, v in args.initialization.items():
         filename += f'{k}:{v},'
+    filename += '.json'
     with (output_dir / filename).open('w') as f:
         json.dump(data, f)
 

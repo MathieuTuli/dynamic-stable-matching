@@ -4,6 +4,7 @@ import itertools
 import tqdm
 
 from main import main, parser
+from agents import Man, Woman
 
 if __name__ == "__main__":
     dist = [
@@ -24,6 +25,8 @@ if __name__ == "__main__":
     ]
     parameters = list(itertools.product(*parameters))
     for i, params in enumerate(tqdm.tqdm(parameters, desc='EXP')):
+        Man.id_counter = 0
+        Woman.id_counter = 0
         args = {
             'size': params[0],
             'horizon': params[1],
