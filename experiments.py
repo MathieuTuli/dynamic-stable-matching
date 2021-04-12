@@ -12,7 +12,7 @@ if __name__ == "__main__":
     ]
     values = [0.5, 1, 10]
     parameters = [
-        [2, 5, 10],  # ('size',
+        [2, 5, 6],  # ('size',
         [5, 10],  # ('horizon',
         [{'name': 'gaussian', 'mean': mean, 'var': var}
             for mean, var in itertools.product(*dist)],  # ('initialization',

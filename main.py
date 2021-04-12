@@ -65,7 +65,7 @@ parser.add_argument("--output", default='outputs',
 
 
 def main(args: Namespace):
-    data = args.__dict__
+    data = args.__dict__.copy()
     if args.debug:
         pdb.set_trace()
     np.random.seed(args.seed)
