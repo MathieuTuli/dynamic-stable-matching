@@ -78,7 +78,7 @@ def brute_force(men: List[Man], women: List[Woman],
                                    woman.utilities[other_man]))
             if not any(blocking):
                 stable_pairs.append(pairing)
-            num_blocking = np.sum(np.array(blocking) == True)
+            num_blocking = np.sum(np.array(blocking) is True)
             if num_blocking < min_blocking_count:
                 min_blocking_pair = pairing
 
