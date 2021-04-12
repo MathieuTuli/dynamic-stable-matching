@@ -22,7 +22,8 @@ if __name__ == "__main__":
         #     for mean, var in itertools.product(*dist)],  # ('excitement',
         ['match'],  # ('update',
     ]
-    for i, params in enumerate(tqdm.tqdm(itertools.product(*parameters))):
+    parameters = list(itertools.product(*parameters))
+    for i, params in enumerate(tqdm.tqdm(parameters, desc='EXP')):
         args = {
             'size': params[0],
             'horizon': params[1],
