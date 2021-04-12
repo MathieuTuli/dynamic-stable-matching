@@ -1,6 +1,8 @@
 from typing import List, Tuple
 from collections import defaultdict
 
+from agents import Man, Woman
+
 
 class Evaluator():
     def __init__(self, num_agents):
@@ -11,7 +13,7 @@ class Evaluator():
 
     def aggregate(self, history: List[List[Tuple[int, int]]]) -> None:
         """
-        aggregate the matchingt history to __history_dict
+        aggregate the matching history to __history_dict
         inputs:
             @history: list of matched pairs at each timestep
         """
@@ -102,4 +104,19 @@ class Evaluator():
             count = 0
             prev_matches = matches
         return consistency_rate
-            
+
+
+def compute_social_welfare(pairing: List[Tuple[Man, Woman]]) -> float:
+    welfare = sum([man.utilities[woman] + woman.utilities[man]
+                           for man, woman in pairing])
+    return welfare
+
+
+def compute_consistency(p1: List[Tuple[Man, Woman]], p2: List[Tuple[Man, Woman]]) -> float:
+    # we assume women in m1 and m2 have the same ordering
+    consistent_pairs = 0
+    for (m1, w1), (m2, w2) in zip(p1, p2):
+        assert w1.id == w2.id
+        if m1.id == m2.id:
+            consistent_pairs += 1
+    return consistent_pairs * 1.0 / len(p1)
