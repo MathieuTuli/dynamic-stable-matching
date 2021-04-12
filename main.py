@@ -183,7 +183,7 @@ def main(args: Namespace):
 def save(args, data) -> None:
     output_dir = Path(args.output)
     output_dir.mkdir(exist_ok=True, parents=True)
-    filename = ''
+    filename = 'results'
     filename += f'_maching={args.matching}'
     filename += f'_size={args.size}'
     filename += f'_horizon={args.horizon}'
