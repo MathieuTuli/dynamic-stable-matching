@@ -72,7 +72,7 @@ def get_all_pairs(men: List[Man], women: List[Woman]) -> List[List[Tuple[Man, Wo
 
 def brute_force(men: List[Man], women: List[Woman],
                 method='welfare-optimal') -> List[Tuple[Man, Woman]]:
-    print("Computing brute force pairs")
+    # print("Computing brute force pairs")
     # pairings = [
     #     (list(zip(perm, women)),
     #      sum([man.utilities[woman] + woman.utilities[man]

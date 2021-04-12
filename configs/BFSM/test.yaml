@@ -1,6 +1,6 @@
-size: 4
+size: 5
 seed: 1000
-horizon: 1
+horizon: 10
 
 matching: BFSM
 update: match

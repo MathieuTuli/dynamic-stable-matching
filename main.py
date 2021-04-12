@@ -1,9 +1,11 @@
 from argparse import Namespace, ArgumentParser
 from copy import deepcopy
+from pathlib import Path
 
 import pdb
 
 import numpy as np
+import json
 
 from dynamics import (
     initialize_utilities_from_array,
@@ -30,11 +32,11 @@ parser.add_argument("-s", "--size", type=int,
                     dest='size',
                     default=10, help="Population size")
 parser.add_argument("--initialization",
-                    type=dict,
+                    # type=dict,
                     default=None,
                     help='Initialization type')
 parser.add_argument("--excitement",
-                    type=dict,
+                    # type=dict,
                     default=None,
                     help='Excitement initialization type')
 parser.add_argument("--matching",
@@ -54,9 +56,16 @@ parser.add_argument("--horizon", default=1,
 parser.add_argument("--debug", default=False,
                     type=bool,
                     help='Debug flag')
+parser.add_argument("--print", default=False,
+                    type=bool,
+                    help='Print flag')
+parser.add_argument("--output", default='outputs',
+                    type=str,
+                    help='Output dir')
 
 
 def main(args: Namespace):
+    data = args.__dict__.copy()
     if args.debug:
         pdb.set_trace()
     np.random.seed(args.seed)
@@ -107,26 +116,39 @@ def main(args: Namespace):
             f'Unknown updating transition method {args.update}'
         )
 
-    print("Matching algorithm: " + args.matching)
-    print("Number of agents in each group: " + str(args.size))
-    print("Number of timesteps: " + str(args.horizon))
-    print(args.initialization['name'] + " initialization + " +
-          args.excitement['name'] + " excitement")
+    if args.print:
+        print("Matching algorithm: " + args.matching)
+        print("Number of agents in each group: " + str(args.size))
+        print("Number of timesteps: " + str(args.horizon))
+        print(args.initialization['name'] + " initialization + " +
+              args.excitement['name'] + " excitement")
 
     evaluator = Evaluator(args.size)
     averages = []
     longest = []
-    print("Preferences: ")
+    if args.print:
+        print("Preferences: ")
+    data['preferences'] = dict()
     for i in range(args.horizon):
-
-        print("Timestep " + str(i) + ": ")
-        print("Men's preferences:")
+        data['preferences'][i] = dict()
+        data['preferences'][i]['men'] = dict()
+        data['preferences'][i]['women'] = dict()
+        if args.print:
+            print("Timestep " + str(i) + ": ")
+            print("Men's preferences:")
         for man in men:
-            print([w.id for w in man.preferences])
+            data['preferences'][i]['men'][man.id] = \
+                [w.id for w in man.preferences]
+            if args.print:
+                print(data['preferences'][i]['men'][man.id])
             # print([(w.id, man.utilities[w]) for w in man.preferences])
-        print("Women's preferences:")
+        if args.print:
+            print("Women's preferences:")
         for woman in women:
-            print([m.id for m in woman.preferences])
+            data['preferences'][i]['women'][woman.id] = \
+                [m.id for m in woman.preferences]
+            if args.print:
+                print(data['preferences'][i]['women'][woman.id])
             # print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
         pairs = matching_algorithm(men, women)
@@ -136,20 +158,53 @@ def main(args: Namespace):
         longest.append(evaluator.evaluate_longest(history))
     consistency_rate = evaluator.evaluate_consistency_rate(history)
 
-    print("Matches: ")
+    if args.print:
+        print("Matches: ")
+    data['matches'] = dict()
     for i, matches in enumerate(history):
-        print("Timestep " + str(i) + ": ", end='')
-        print(matches)
-    print("Average number of timestep staying married: ", end='')
-    print(averages)
-    print("Largest number of timestep staying married: ", end='')
-    print(longest)
-    print("Proportion of marriage persisted: ", end='')
-    print(consistency_rate)
+        if args.print:
+            print("Timestep " + str(i) + ": ", end='')
+            print(matches)
+        data['matches'][i] = matches
+    if args.print:
+        print("Average number of timestep staying married: ", end='')
+        print(averages)
+        print("Largest number of timestep staying married: ", end='')
+        print(longest)
+        print("Proportion of marriage persisted: ", end='')
+        print(consistency_rate)
+    data['averages'] = averages
+    data['longest'] = longest
+    data['consistency_rate'] = consistency_rate
+    save(args, data)
+
+
+def save(args, data) -> None:
+    output_dir = Path(args.output)
+    output_dir.mkdir(exist_ok=True, parents=True)
+    filename = 'results'
+    filename += f'_maching={args.matching}'
+    filename += f'_size={args.size}'
+    filename += f'_horizon={args.horizon}'
+    filename += f'_update={args.update}'
+    filename += f'_seed={args.seed}'
+    filename += '_initialization='
+    for k, v in args.initialization.items():
+        filename += f'{k}:{v},'
+    filename += '_excitement='
+    for k, v in args.initialization.items():
+        filename += f'{k}:{v},'
+    filename += '.json'
+    with (output_dir / filename).open('w') as f:
+        json.dump(data, f)
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
     if args.config is not None:
         args = config_file_parser(args)
+    if isinstance(args.initialization, str):
+        args.initialization = json.loads(args.initialization)
+    if isinstance(args.excitement, str):
+        args.excitement = json.loads(args.excitement)
     main(args)
