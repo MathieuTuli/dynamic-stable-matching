@@ -193,6 +193,7 @@ def save(args, data) -> None:
     for k, v in args.initialization.items():
         filename += f'{k}:{v},'
     filename += '_excitement='
+    filename += '.json'
     for k, v in args.initialization.items():
         filename += f'{k}:{v},'
     with (output_dir / filename).open('w') as f:
