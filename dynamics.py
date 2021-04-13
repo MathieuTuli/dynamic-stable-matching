@@ -71,8 +71,8 @@ def update_utilities_with_match(men: List[Man], women: List[Woman]) -> None:
     for man in men:
         for woman in women:
             if man.match == woman:
-                man.utilities[woman] *= min(1, 1 - man.excitement[woman])
-                woman.utilities[man] *= min(1, 1 - woman.excitement[man])
+                man.utilities[woman] *= max(0, min(1, 1 - man.excitement[woman]))
+                woman.utilities[man] *= max(0, min(1, 1 - woman.excitement[man]))
             else:
                 man.utilities[woman] *= max(1, 1 + man.excitement[woman])
                 woman.utilities[man] *= max(1, 1 + woman.excitement[man])
@@ -84,8 +84,8 @@ def update_utilities_with_match_decay_only(men: List[Man],
                                            women: List[Woman]) -> None:
     """Decay the utilities matched couples have for each other."""
     for agent in men + women:
-        agent.utilities[agent.match] *= min(1,
-                                            1 - agent.excitement[agent.match])
+        agent.utilities[agent.match] *= max(0, min(1,
+                                            1 - agent.excitement[agent.match]))
     normalize_utilities(men, women)
     update_preferences(men, women)
 
