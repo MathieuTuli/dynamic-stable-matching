@@ -1,14 +1,14 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from functools import partial
 from enum import Enum
 from multiprocessing import Pool
 
 import itertools
-
+import random
 import numpy as np
 
 from agents import Man, Woman
-from evaluate import compute_social_welfare
+from evaluate import compute_social_welfare, compute_consistency
 
 
 class MatchAlgorithms(Enum):
@@ -68,13 +68,13 @@ def get_num_blocking(men: List[Man], women: List[Woman],
     #                     woman.utilities[other_man]))
     # return np.sum(np.array(blocking) == True)
 
-
 def get_stable_pairs(men: List[Man], women: List[Woman],
                      pairings: List[List[Tuple[Man, Woman]]]
                      ) -> List[List[Tuple[Man, Woman]]]:
-    pool = Pool(20)
+    pool = Pool(10)
     fn = partial(get_num_blocking, men, women)
     num_blocking_all = pool.map(fn, pairings)
+    pool.close()
     num_blocking_all = np.array(num_blocking_all)
     # inds = np.where(num_blocking_all == np.min(num_blocking_all))[0]
     inds = np.where(num_blocking_all)[0]
@@ -93,17 +93,7 @@ def get_all_pairs(men: List[Man],
     return pairings
 
 
-def brute_force(men: List[Man], women: List[Woman],
-                method='welfare-optimal') -> List[Tuple[Man, Woman]]:
-    # print("Computing brute force pairs")
-    # pairings = [
-    #     (list(zip(perm, women)),
-    #      sum([man.utilities[woman] + woman.utilities[man]
-    #           for man, woman in list(zip(perm, women))])) for
-    #     perm in itertools.permutations(men, len(women))]
-    pairings = get_all_pairs(men, women)
-
-    def get_welfare_optimal_paring(pairings: List[List[Tuple[Man, Woman]]]
+def get_welfare_optimal_paring(pairings: List[List[Tuple[Man, Woman]]]
                                    ) -> List[Tuple[Man, Woman]]:
         best_welfare = -1
         best_pairing = None
@@ -113,6 +103,34 @@ def brute_force(men: List[Man], women: List[Woman],
                 best_welfare = welfare
                 best_pairing = pairing
         return best_pairing
+
+
+def probabilistic(p, men: List[Man], women: List[Woman], stable=True) -> Optional[List[Tuple[Man, Woman]]]:
+    pairings = get_all_pairs(men, women)
+    if stable:
+        pairings = get_stable_pairs(men, women, pairings)
+    welfare_optimal_pair = get_welfare_optimal_paring(pairings)
+    
+    x = random.random()
+    if x >= p:
+        # do nothing
+        return None
+    else:
+        for pair in welfare_optimal_pair:
+            pair[0].match = pair[1]
+            pair[1].match = pair[0]
+        return welfare_optimal_pair
+
+
+def brute_force(men: List[Man], women: List[Woman],
+                method='welfare-optimal') -> List[Tuple[Man, Woman]]:
+    # print("Computing brute force pairs")
+    # pairings = [
+    #     (list(zip(perm, women)),
+    #      sum([man.utilities[woman] + woman.utilities[man]
+    #           for man, woman in list(zip(perm, women))])) for
+    #     perm in itertools.permutations(men, len(women))]
+    pairings = get_all_pairs(men, women)
 
     if method == 'welfare-optimal':
         pairing = get_welfare_optimal_paring(pairings)

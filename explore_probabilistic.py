@@ -25,7 +25,7 @@ from dynamics import (
 from evaluate import Evaluator, compute_consistency, compute_social_welfare
 from utils import config_file_parser
 from agents import Man, Woman
-from match import get_all_pairs, get_stable_pairs
+from match import probabilistic
 
 
 def main():
@@ -82,47 +82,46 @@ def main():
     update_algorithm = update_utilities_with_match
     most_recent_match = None
     results_all = []
-    for i in range(horizon):
-        print("Timestep " + str(i) + ": ")
-        # print("Men's preferences:")
-        # for man in men:
-            # print([w.id for w in man.preferences])
-            # print([(w.id, man.utilities[w]) for w in man.preferences])
-        # print("Women's preferences:")
-        # for woman in women:
-        #     print([m.id for m in woman.preferences])
-            # print([(m.id, woman.utilities[m]) for m in woman.preferences])
+    for prob in np.linspace(0.0, 1.0, num=20):
+        results = []
+        print("prob:", prob)
+        for i in range(horizon):
+            print("Timestep " + str(i) + ": ")
+            # print("Men's preferences:")
+            # for man in men:
+                # print([w.id for w in man.preferences])
+                # print([(w.id, man.utilities[w]) for w in man.preferences])
+            # print("Women's preferences:")
+            # for woman in women:
+            #     print([m.id for m in woman.preferences])
+                # print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
-        all_pairs = get_all_pairs(men, women)
-        stable_matches_all = get_stable_pairs(men, women, all_pairs)
+            new_match = probabilistic(1.0 if i == 0 else prob, men, women)
+            if new_match is None:
+                # no change
+                new_match = most_recent_match
 
-        print("Number of stable matches:", len(stable_matches_all))
-        
-        if i > 0:
-            results = []
-            for match in stable_matches_all:
-                welfare = compute_social_welfare(match)
-                consistency = compute_consistency(match, most_recent_match)
-                results_all.append([consistency, welfare])
+            if i > 0:
+                welfare = compute_social_welfare(new_match)
+                consistency = compute_consistency(new_match, most_recent_match)
                 results.append([consistency, welfare])
-            fig, ax = plt.subplots(1, 1, figsize=(12,8))
-            for consistency, match in results:
-                ax.scatter(consistency, match)
-                print(consistency, match)
-            plt.show()
-            plt.close()
+                print(welfare, consistency)
+            
+            most_recent_match = new_match
+            update_algorithm(men, women)
         
-        # update with a random stable match
-        most_recent_match = random.choice(stable_matches_all)
-        for man, woman in most_recent_match:
-            man.match = woman
-            woman.match = man
-        update_algorithm(men, women)
+        results = np.array(results)
+        results_all.append([prob, np.mean(results[:, 0]), np.mean(results[:, 1])])
 
     # results_all = np.array(results_all)
     fig, ax = plt.subplots(1, 1, figsize=(12,8))
-    for consistency, match in results_all:
+    for prob, consistency, match in results_all:
+        # ax.scatter(consistency, match, label=f"p={prob:.4f}")
         ax.scatter(consistency, match)
+        ax.annotate(f"p={prob:.4f}", (consistency, match))
+    ax.set_xlabel("Consistency")
+    ax.set_ylabel("Total social welfare")
+    # ax.legend()
     plt.show()
     plt.close()
 
