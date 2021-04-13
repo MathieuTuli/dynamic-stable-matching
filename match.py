@@ -19,18 +19,22 @@ class MatchAlgorithms(Enum):
     def __str__(self):
         return self.name
 
-def get_num_blocking(men: List[Man], women: List[Woman], pairing: List[Tuple[Man, Woman]]) -> bool:
+
+def get_num_blocking(men: List[Man], women: List[Woman],
+                     pairing: List[Tuple[Man, Woman]]) -> bool:
     for i in range(len(pairing)):
         for j in range(i+1, len(pairing)):
             m1, w1 = pairing[i]
             m2, w2 = pairing[j]
-            if m1.utilities[w2] > m1.utilities[w1] and w2.utilities[m1] > w2.utilities[m2]:
+            if m1.utilities[w2] > m1.utilities[w1] and \
+                    w2.utilities[m1] > w2.utilities[m2]:
                 return False
-            if w1.utilities[m2] > w1.utilities[m1] and m2.utilities[w1] > m2.utilities[w2]:
+            if w1.utilities[m2] > w1.utilities[m1] and \
+                    m2.utilities[w1] > m2.utilities[w2]:
                 return False
     return True
     # blocking = list()
-    
+
     # for paired_man, paired_woman in pairing:
     #     for man in men:
     #         if man == paired_man:
@@ -43,29 +47,31 @@ def get_num_blocking(men: List[Man], women: List[Woman], pairing: List[Tuple[Man
     #                 man.utilities[paired_woman] > man.utilities[other_woman]:
     #                 return False
 
-        #     blocking.append(
-        #         np.greater(paired_woman.utilities[man],
-        #                     paired_woman.utilities[paired_man])
-        #         and
-        #         np.greater(man.utilities[paired_woman],
-        #                     man.utilities[other_woman]))
-        # for woman in women:
-        #     if woman == paired_woman:
-        #         continue
-        #     for m, w in pairing:
-        #         if w == woman:
-        #             other_man = m
-        #             break
-        #     blocking.append(
-        #         np.greater(paired_man.utilities[woman],
-        #                     paired_man.utilities[paired_woman])
-        #         and
-        #         np.greater(woman.utilities[paired_man],
-        #                     woman.utilities[other_man]))
+    #     blocking.append(
+    #         np.greater(paired_woman.utilities[man],
+    #                     paired_woman.utilities[paired_man])
+    #         and
+    #         np.greater(man.utilities[paired_woman],
+    #                     man.utilities[other_woman]))
+    # for woman in women:
+    #     if woman == paired_woman:
+    #         continue
+    #     for m, w in pairing:
+    #         if w == woman:
+    #             other_man = m
+    #             break
+    #     blocking.append(
+    #         np.greater(paired_man.utilities[woman],
+    #                     paired_man.utilities[paired_woman])
+    #         and
+    #         np.greater(woman.utilities[paired_man],
+    #                     woman.utilities[other_man]))
     # return np.sum(np.array(blocking) == True)
-    
 
-def get_stable_pairs(men: List[Man], women: List[Woman], pairings: List[List[Tuple[Man, Woman]]]) -> List[List[Tuple[Man, Woman]]]:
+
+def get_stable_pairs(men: List[Man], women: List[Woman],
+                     pairings: List[List[Tuple[Man, Woman]]]
+                     ) -> List[List[Tuple[Man, Woman]]]:
     pool = Pool(20)
     fn = partial(get_num_blocking, men, women)
     num_blocking_all = pool.map(fn, pairings)
@@ -79,7 +85,8 @@ def get_stable_pairs(men: List[Man], women: List[Woman], pairings: List[List[Tup
     return stable_pairs
 
 
-def get_all_pairs(men: List[Man], women: List[Woman]) -> List[List[Tuple[Man, Woman]]]:
+def get_all_pairs(men: List[Man],
+                  women: List[Woman]) -> List[List[Tuple[Man, Woman]]]:
     # all pairings have the same ordering of women
     pairings = [list(zip(perm, women)) for
                 perm in itertools.permutations(men, len(women))]

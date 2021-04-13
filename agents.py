@@ -63,14 +63,15 @@ class Agent:
 
     def normalize_utilities(self) -> None:
         utilities_sum = np.sum(list(self.utilities.values()))
-        num_agents = len(list(self.utilities.values()))      
+        num_agents = len(list(self.utilities.values()))
         for agent, value in self.utilities.items():
-            self.utilities[agent] = value / utilities_sum if utilities_sum > 0 else 1.0 / num_agents
+            self.utilities[agent] = value / \
+                utilities_sum if utilities_sum > 0 else 1.0 / num_agents
 
     def update_preferences(self) -> None:
-        self.preferences = [k for k, v in sorted(self.utilities.items(),
+        self.preferences = [k for k, v in sorted(
+            self.utilities.items(),
             key=lambda x: x[1], reverse=True)]
-        
 
     # @property
     # def preferences(self) -> List[Agent]:
