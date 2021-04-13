@@ -4,11 +4,7 @@ import pdb
 import random
 
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-sns.set()
-sns.set_style('whitegrid')
+from visualization import plot_tradeoff
 
 from dynamics import (
     initialize_utilities_from_array,
@@ -40,7 +36,9 @@ def main():
     women = [Woman() for i in range(size)]
     
     initialization = {'name': 'constant', 'value': 0.1}
+    # initialization = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     excitement = {'name': 'constant', 'value': 0.1}
+    # excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     update = 'match'
 
     if initialization['name'] == 'constant':
@@ -82,6 +80,7 @@ def main():
     update_algorithm = update_utilities_with_match
     most_recent_match = None
     results_all = []
+    annotations_all = []
     for prob in np.linspace(0.0, 1.0, num=20):
         results = []
         print("prob:", prob)
@@ -104,26 +103,19 @@ def main():
             if i > 0:
                 welfare = compute_social_welfare(new_match)
                 consistency = compute_consistency(new_match, most_recent_match)
-                results.append([consistency, welfare])
+                results.append([welfare, consistency])
                 print(welfare, consistency)
             
             most_recent_match = new_match
             update_algorithm(men, women)
         
         results = np.array(results)
-        results_all.append([prob, np.mean(results[:, 0]), np.mean(results[:, 1])])
+        results_all.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
+        annotations_all.append(f"p={prob:.4f}")
 
-    # results_all = np.array(results_all)
-    fig, ax = plt.subplots(1, 1, figsize=(12,8))
-    for prob, consistency, match in results_all:
-        # ax.scatter(consistency, match, label=f"p={prob:.4f}")
-        ax.scatter(consistency, match)
-        ax.annotate(f"p={prob:.4f}", (consistency, match))
-    ax.set_xlabel("Consistency")
-    ax.set_ylabel("Total social welfare")
-    # ax.legend()
-    plt.show()
-    plt.close()
+    results_all = np.array(results_all)
+    plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all)
+    
 
 
 if __name__ == "__main__":
