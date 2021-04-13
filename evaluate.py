@@ -1,6 +1,8 @@
 from typing import List, Tuple
 from collections import defaultdict
 
+import numpy as np
+
 from agents import Man, Woman
 
 
@@ -107,7 +109,7 @@ class Evaluator():
 
 
 def compute_social_welfare(pairing: List[Tuple[Man, Woman]]) -> float:
-    welfare = sum([man.utilities[woman] + woman.utilities[man]
+    welfare = np.mean([man.utilities[woman] + woman.utilities[man]
                            for man, woman in pairing])
     return welfare
 

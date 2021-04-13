@@ -15,7 +15,7 @@ def plot_tradeoff(sw_all, consistency_all, annotations_all = None, fpath=None):
         ax.scatter(consistency, sw)
         ax.annotate(text, (consistency, sw))
     ax.set_xlabel("Consistency")
-    ax.set_ylabel("Total social welfare")
+    ax.set_ylabel("Mean social welfare")
     if fpath is not None:
         os.makedirs(os.path.dirname(fpath), exist_ok=True)
         fig.savefig(fpath)
