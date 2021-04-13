@@ -26,6 +26,7 @@ class Agent:
 
     def __init__(self) -> None:
         # self.__utilities: Utilities = Utilities()
+        self.id: int = -1
         self.utilities: Dict[Agent, float] = dict()
         self.preferences: List[Agent] = list()
         self.excitement: Dict[Agent, float] = dict()

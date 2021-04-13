@@ -94,13 +94,23 @@ def main():
             # print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
         all_pairs = get_all_pairs(men, women)
-        stable_matches_all = get_stable_pairs(all_pairs, men, women)
+        stable_matches_all = get_stable_pairs(men, women, all_pairs)
+
+        print("Number of stable matches:", len(stable_matches_all))
         
         if i > 0:
+            results = []
             for match in stable_matches_all:
                 welfare = compute_social_welfare(match)
                 consistency = compute_consistency(match, most_recent_match)
                 results_all.append([consistency, welfare])
+                results.append([consistency, welfare])
+            fig, ax = plt.subplots(1, 1, figsize=(12,8))
+            for consistency, match in results:
+                ax.scatter(consistency, match)
+                print(consistency, match)
+            plt.show()
+            plt.close()
         
         # update with a random stable match
         most_recent_match = random.choice(stable_matches_all)

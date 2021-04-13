@@ -1,6 +1,7 @@
 from typing import List, Tuple
 from functools import partial
 from enum import Enum
+from multiprocessing import Pool
 
 import itertools
 
@@ -18,49 +19,50 @@ class MatchAlgorithms(Enum):
     def __str__(self):
         return self.name
 
+def get_num_blocking(men: List[Man], women: List[Woman], pairing: List[Tuple[Man, Woman]]) -> int:
+    blocking = list()
+    
+    for paired_man, paired_woman in pairing:
+        for man in men:
+            if man == paired_man:
+                continue
+            for m, w in pairing:
+                if m == man:
+                    other_woman = w
+                    break
+            blocking.append(
+                np.greater(paired_woman.utilities[man],
+                            paired_woman.utilities[paired_man])
+                and
+                np.greater(man.utilities[paired_woman],
+                            man.utilities[other_woman]))
+        for woman in women:
+            if woman == paired_woman:
+                continue
+            for m, w in pairing:
+                if w == woman:
+                    other_man = m
+                    break
+            blocking.append(
+                np.greater(paired_man.utilities[woman],
+                            paired_man.utilities[paired_woman])
+                and
+                np.greater(woman.utilities[paired_man],
+                            woman.utilities[other_man]))
+    return np.sum(np.array(blocking) == True)
+    
 
-def get_stable_pairs(pairings: List[List[Tuple[Man, Woman]]],
-                         men: List[Man],
-                         women: List[Woman]) -> List[Tuple[Man, Woman]]:
+def get_stable_pairs(men: List[Man], women: List[Woman], pairings: List[List[Tuple[Man, Woman]]]) -> List[List[Tuple[Man, Woman]]]:
+    pool = Pool(20)
+    fn = partial(get_num_blocking, men, women)
+    num_blocking_all = zip(*pool.map(fn, pairings))
+    num_blocking_all = np.array(num_blocking_all)
+    inds = np.where(num_blocking_all == np.min(num_blocking_all))
     stable_pairs = list()
-    min_blocking_pair = None
-    min_blocking_count = len(men) + 1
-    for pairing in pairings:
-        blocking = list()
-        for paired_man, paired_woman in pairing:
-            for man in men:
-                if man == paired_man:
-                    continue
-                for m, w in pairing:
-                    if m == man:
-                        other_woman = w
-                        break
-                blocking.append(
-                    np.greater(paired_woman.utilities[man],
-                                paired_woman.utilities[paired_man])
-                    and
-                    np.greater(man.utilities[paired_woman],
-                                man.utilities[other_woman]))
-            for woman in women:
-                if woman == paired_woman:
-                    continue
-                for m, w in pairing:
-                    if w == woman:
-                        other_man = m
-                        break
-                blocking.append(
-                    np.greater(paired_man.utilities[woman],
-                                paired_man.utilities[paired_woman])
-                    and
-                    np.greater(woman.utilities[paired_man],
-                                woman.utilities[other_man]))
-        if not any(blocking):
-            stable_pairs.append(pairing)
-        num_blocking = np.sum(np.array(blocking) == True)
-        if num_blocking < min_blocking_count:
-            min_blocking_pair = pairing
+    for idx in inds:
+        stable_pairs.append(pairings[idx])
 
-    return stable_pairs if len(stable_pairs) > 0 else min_blocking_pair
+    return stable_pairs
 
 
 def get_all_pairs(men: List[Man], women: List[Woman]) -> List[List[Tuple[Man, Woman]]]:
@@ -98,7 +100,7 @@ def brute_force(men: List[Man], women: List[Woman],
             pair[1].match = pair[0]
         return pairing
     elif method == 'stable-matching':
-        stable_pairs = get_stable_pairs(pairings, men, women)
+        stable_pairs = get_stable_pairs(men, women, pairings)
         pairing = get_welfare_optimal_paring(stable_pairs)
         for pair in pairing:
             pair[0].match = pair[1]
