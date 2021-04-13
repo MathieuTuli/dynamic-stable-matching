@@ -32,26 +32,26 @@ class Agent:
         self.excitement: Dict[Agent, float] = dict()
         self.match: Agent = None
 
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}-{self.id}"
+    # def __str__(self) -> str:
+    #     return f"{self.__class__.__name__}-{self.id}"
 
-    def __hash__(self) -> int:
-        return hash(str(self))
+    # def __hash__(self) -> int:
+    #     return hash(str(self))
 
-    def __eq__(self, other: Agent) -> bool:
-        return self.id == other.id
+    # def __eq__(self, other: Agent) -> bool:
+    #     return self.id == other.id
 
-    def __gt__(self, other: Agent) -> bool:
-        return self.id > other.id
+    # def __gt__(self, other: Agent) -> bool:
+    #     return self.id > other.id
 
-    def __ge__(self, other: Agent) -> bool:
-        return self.id >= other.id
+    # def __ge__(self, other: Agent) -> bool:
+    #     return self.id >= other.id
 
-    def __lt__(self, other: Agent) -> bool:
-        return self.id < other.id
+    # def __lt__(self, other: Agent) -> bool:
+    #     return self.id < other.id
 
-    def __le__(self, other: Agent) -> bool:
-        return self.id <= other.id
+    # def __le__(self, other: Agent) -> bool:
+    #     return self.id <= other.id
 
     # @property
     # def utilities(self) -> Utilities:
