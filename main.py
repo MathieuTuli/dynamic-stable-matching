@@ -19,7 +19,7 @@ from dynamics import (
     initialize_excitement_constant,
     initialize_excitement_gaussian,
     initialize_excitement_uniform_random)
-from evaluate import Evaluator
+from evaluate import Evaluator, compute_consistency, compute_social_welfare
 from utils import config_file_parser
 from agents import Man, Woman
 from match import MPDA, WPDA, BFWO, BFSM
@@ -129,6 +129,9 @@ def main(args: Namespace):
     if args.print:
         print("Preferences: ")
     data['preferences'] = dict()
+    social_welfare = list()
+    consistency = list()
+    prev_pairs = None
     for i in range(args.horizon):
         data['preferences'][i] = dict()
         data['preferences'][i]['men'] = dict()
@@ -154,8 +157,14 @@ def main(args: Namespace):
         pairs = matching_algorithm(men, women)
         history.append([(pair[0].id, pair[1].id) for pair in pairs])
         update_algorithm(men, women)
+        if i > 0:
+            social_welfare.append(compute_social_welfare(pairs))
+            consistency.append(compute_consistency(pairs, prev_pairs))
         averages.append(evaluator.evaluate_average(history))
         longest.append(evaluator.evaluate_longest(history))
+        prev_pairs = pairs
+    data['social_welfare'] = np.mean(social_welfare)
+    data['consistency'] = np.mean(consistency)
     consistency_rate = evaluator.evaluate_consistency_rate(history)
 
     if args.print:
@@ -177,6 +186,7 @@ def main(args: Namespace):
     data['longest'] = longest
     data['consistency_rate'] = consistency_rate
     save(args, data)
+    return data
 
 
 def save(args, data) -> None:
