@@ -80,9 +80,9 @@ def get_welfare_optimal_pairing(pairings: List[List[Tuple[Man, Woman]]]
 def get_welfare_optimal_pairing_from_all_pairs(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
     # construct the bipartite graph
     G = np.zeros(len(women) * len(men)).reshape(len(women), len(men))
-    for woman in women:
-        for man in men:
-            G[woman.id][man.id] = woman.utilities[man] + man.utilities[woman]
+    for idx_w, woman in enumerate(women):
+        for idx_m, man in enumerate(men):
+            G[idx_w][idx_m] = woman.utilities[man] + man.utilities[woman]
     
     # we need to invert the values since scipy solves for min weight
     G = np.max(G) - G
@@ -91,13 +91,13 @@ def get_welfare_optimal_pairing_from_all_pairs(men: List[Man], women: List[Woman
     return pairing
 
 
-def probabilistic(p, men: List[Man], women: List[Woman], stable=True) -> Optional[List[Tuple[Man, Woman]]]:
+def probabilistic(p: float, men: List[Man], women: List[Woman], stable=True) -> Optional[List[Tuple[Man, Woman]]]:
     if stable:
         pairings = get_all_pairs(men, women)
         pairings = get_stable_pairs(men, women, pairings)
+        welfare_optimal_pair = get_welfare_optimal_pairing(pairings)
     else:
         welfare_optimal_pair = get_welfare_optimal_pairing_from_all_pairs(men, women)
-        # welfare_optimal_pair = get_welfare_optimal_pairing(pairings)
     
     x = random.random()
     if x >= p:
@@ -108,6 +108,44 @@ def probabilistic(p, men: List[Man], women: List[Woman], stable=True) -> Optiona
             pair[0].match = pair[1]
             pair[1].match = pair[0]
         return welfare_optimal_pair
+
+
+def deterministic(
+    consistency_num: int,
+    men: List[Man],
+    women: List[Woman],
+    previous_pairing: Optional[List[Tuple[Man, Woman]]]
+) -> List[Tuple[Man, Woman]]:
+    if previous_pairing is None:
+        consistency_num = 0
+        free_men = men
+        free_women = women
+        frozen_inds = []
+    else: 
+        # find the pairs that have the highest utilities
+        utilities = [m.utilities[w] + w.utilities[m] for (m, w) in previous_pairing]
+        inds_all = np.argsort(utilities)[::-1]
+        frozen_inds = inds_all[:consistency_num]
+        free_inds = inds_all[consistency_num:]
+        free_men = []
+        free_women = []
+        for idx in free_inds:
+            free_men.append(previous_pairing[idx][0])
+            free_women.append(previous_pairing[idx][1])
+    
+    if len(free_men) > 0:
+        welfare_optimal_pair_rematched = get_welfare_optimal_pairing_from_all_pairs(free_men, free_women)
+    else:
+        welfare_optimal_pair_rematched = []
+    new_match = [None] * len(men)
+    for idx in frozen_inds:
+        m, w = previous_pairing[idx]
+        new_match[w.id] = (m, w)
+    for (m, w) in welfare_optimal_pair_rematched:
+        new_match[w.id] = (m, w)
+        m.match = w
+        w.match = m
+    return new_match
 
 
 def brute_force(men: List[Man], women: List[Woman],

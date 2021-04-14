@@ -21,25 +21,26 @@ from dynamics import (
 from evaluate import Evaluator, compute_consistency, compute_social_welfare
 from utils import config_file_parser
 from agents import Man, Woman
-from match import probabilistic, is_stable
+from match import deterministic, is_stable
 
 
 def main():
     seed = 1000
 
     horizon = 10
-    size = 6
+    # size = 10
+    size = 100
     
     men = [Man() for i in range(size)]
     women = [Woman() for i in range(size)]
     
     # initialization = {'name': 'constant', 'value': 0.1}
-    initialization = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
-    # excitement = {'name': 'constant', 'value': 0.1}
-    excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
+    initialization = {'name': 'gaussian', 'mean': 10, 'var': 1}
+    excitement = {'name': 'constant', 'value': 0.1}
+    # excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     update = 'match'
 
-    guarantee_stability = True
+    guarantee_stability = False
 
     def initialize(men, women):
         random.seed(seed)
@@ -84,22 +85,22 @@ def main():
     most_recent_match = None
     results_all = []
     annotations_all = []
-    for prob in np.linspace(0.0, 1.0, num=50):
+    for consistency_num in range(size + 1):
         initialize(men, women)
         results = []
-        print("prob:", prob)
+        print("Consistency thresh:", consistency_num)
         for i in range(horizon):
             print("Timestep " + str(i) + ": ")
             # print("Men's preferences:")
             # for man in men:
-                # print([w.id for w in man.preferences])
-                # print([(w.id, man.utilities[w]) for w in man.preferences])
+            #     print([w.id for w in man.preferences])
+            #     print([(w.id, man.utilities[w]) for w in man.preferences])
             # print("Women's preferences:")
             # for woman in women:
             #     print([m.id for m in woman.preferences])
-                # print([(m.id, woman.utilities[m]) for m in woman.preferences])
+            #     print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
-            new_match = probabilistic(1.0 if i == 0 else prob, men, women, stable=guarantee_stability)
+            new_match = deterministic(consistency_num, men, women, most_recent_match)
             if new_match is None:
                 # no change
                 new_match = most_recent_match
@@ -116,7 +117,7 @@ def main():
         
         results = np.array(results)
         results_all.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
-        annotations_all.append(f"p={prob:.4f}")
+        annotations_all.append(f"c={consistency_num * 1.0 / size:.4f}")
 
     results_all = np.array(results_all)
     plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
