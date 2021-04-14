@@ -111,7 +111,7 @@ class Evaluator():
 def compute_social_welfare(pairing: List[Tuple[Man, Woman]]) -> float:
     welfare = np.mean([man.utilities[woman] + woman.utilities[man]
                            for man, woman in pairing])
-    return welfare
+    return welfare / 2
 
 
 def compute_consistency(p1: List[Tuple[Man, Woman]], p2: List[Tuple[Man, Woman]]) -> float:
