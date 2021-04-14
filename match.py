@@ -24,7 +24,7 @@ class MatchAlgorithms(Enum):
 
 
 def is_stable(men: List[Man], women: List[Woman],
-                     pairing: List[Tuple[Man, Woman]]) -> bool:
+              pairing: List[Tuple[Man, Woman]]) -> bool:
     for i in range(len(pairing)):
         for j in range(i+1, len(pairing)):
             m1, w1 = pairing[i]
@@ -62,7 +62,7 @@ def get_all_pairs(men: List[Man],
 
 
 def get_welfare_optimal_pairing(pairings: List[List[Tuple[Man, Woman]]]
-                                   ) -> List[Tuple[Man, Woman]]:
+                                ) -> List[Tuple[Man, Woman]]:
     # best_welfare = -1
     # best_pairing = None
     # for pairing in pairings:
@@ -83,11 +83,12 @@ def get_welfare_optimal_pairing_from_all_pairs(men: List[Man], women: List[Woman
     for idx_w, woman in enumerate(women):
         for idx_m, man in enumerate(men):
             G[idx_w][idx_m] = woman.utilities[man] + man.utilities[woman]
-    
+
     # we need to invert the values since scipy solves for min weight
     G = np.max(G) - G
     row_inds, col_inds = linear_sum_assignment(G)
-    pairing = [(men[col_idx], women[row_idx]) for row_idx, col_idx in zip(row_inds, col_inds)]
+    pairing = [(men[col_idx], women[row_idx])
+               for row_idx, col_idx in zip(row_inds, col_inds)]
     return pairing
 
 
@@ -97,8 +98,9 @@ def probabilistic(p: float, men: List[Man], women: List[Woman], stable=True) -> 
         pairings = get_stable_pairs(men, women, pairings)
         welfare_optimal_pair = get_welfare_optimal_pairing(pairings)
     else:
-        welfare_optimal_pair = get_welfare_optimal_pairing_from_all_pairs(men, women)
-    
+        welfare_optimal_pair = get_welfare_optimal_pairing_from_all_pairs(
+            men, women)
+
     x = random.random()
     if x >= p:
         # do nothing
@@ -121,9 +123,10 @@ def deterministic(
         free_men = men
         free_women = women
         frozen_inds = []
-    else: 
+    else:
         # find the pairs that have the highest utilities
-        utilities = [m.utilities[w] + w.utilities[m] for (m, w) in previous_pairing]
+        utilities = [m.utilities[w] + w.utilities[m]
+                     for (m, w) in previous_pairing]
         inds_all = np.argsort(utilities)[::-1]
         frozen_inds = inds_all[:consistency_num]
         free_inds = inds_all[consistency_num:]
@@ -132,9 +135,10 @@ def deterministic(
         for idx in free_inds:
             free_men.append(previous_pairing[idx][0])
             free_women.append(previous_pairing[idx][1])
-    
+
     if len(free_men) > 0:
-        welfare_optimal_pair_rematched = get_welfare_optimal_pairing_from_all_pairs(free_men, free_women)
+        welfare_optimal_pair_rematched = get_welfare_optimal_pairing_from_all_pairs(
+            free_men, free_women)
     else:
         welfare_optimal_pair_rematched = []
     new_match = [None] * len(men)
@@ -222,11 +226,13 @@ def deferred_acceptance(men: List[Man], women: List[Woman],
             print(f"{agent}, {agent.match}")
         raise RuntimeError(
             "Someone is unmatched.")
-    matchings_1 = sorted([(x, x.match) for x in proposers])
-    matchings_2 = sorted([(x.match, x) for x in proposed_to])
-    if matchings_1 != matchings_2:
-        raise RuntimeError(
-            "Something went horribly wrong. Matchings don't match")
+    # matchings_1 = sorted([(x, x.match) for x in proposers])
+    # matchings_2 = sorted([(x.match, x) for x in proposed_to])
+    # if matchings_1 != matchings_2:
+    #     raise RuntimeError(
+    #         "Something went horribly wrong. Matchings don't match")
+    matchings_1 = sorted([(x, x.match)
+                          for x in proposers], key=lambda x: x[1].id)
     return matchings_1
 
 
