@@ -21,7 +21,7 @@ from dynamics import (
 from evaluate import Evaluator, compute_consistency, compute_social_welfare
 from utils import config_file_parser
 from agents import Man, Woman
-from match import probabilistic
+from match import probabilistic, is_stable
 
 
 def main():
@@ -30,16 +30,18 @@ def main():
     np.random.seed(seed)
 
     horizon = 10
-    size = 6
+    size = 50
     
     men = [Man() for i in range(size)]
     women = [Woman() for i in range(size)]
     
     initialization = {'name': 'constant', 'value': 0.1}
     # initialization = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
-    excitement = {'name': 'constant', 'value': 0.1}
-    # excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
+    # excitement = {'name': 'constant', 'value': 0.2}
+    excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     update = 'match'
+
+    guarantee_stability = False
 
     if initialization['name'] == 'constant':
         initialize_utilities_constant(
@@ -95,7 +97,7 @@ def main():
             #     print([m.id for m in woman.preferences])
                 # print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
-            new_match = probabilistic(1.0 if i == 0 else prob, men, women)
+            new_match = probabilistic(1.0 if i == 0 else prob, men, women, stable=guarantee_stability)
             if new_match is None:
                 # no change
                 new_match = most_recent_match
@@ -107,6 +109,7 @@ def main():
                 print(welfare, consistency)
             
             most_recent_match = new_match
+            print("Stability:", is_stable(men, women, most_recent_match))
             update_algorithm(men, women)
         
         results = np.array(results)
@@ -114,7 +117,7 @@ def main():
         annotations_all.append(f"p={prob:.4f}")
 
     results_all = np.array(results_all)
-    plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all)
+    plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
     
 
 

@@ -7,7 +7,7 @@ sns.set()
 sns.set_style('whitegrid')
 
 
-def plot_tradeoff(sw_all, consistency_all, annotations_all = None, fpath=None):
+def plot_tradeoff(sw_all, consistency_all, annotations_all = None, title=None, fpath=None):
     fig, ax = plt.subplots(1, 1, figsize=(12,8))
     if annotations_all is None:
         annotations_all = [None] * len(sw_all)
@@ -16,6 +16,8 @@ def plot_tradeoff(sw_all, consistency_all, annotations_all = None, fpath=None):
         ax.annotate(text, (consistency, sw))
     ax.set_xlabel("Consistency")
     ax.set_ylabel("Mean social welfare")
+    plt.title(title)
+    plt.tight_layout()
     if fpath is not None:
         os.makedirs(os.path.dirname(fpath), exist_ok=True)
         fig.savefig(fpath)

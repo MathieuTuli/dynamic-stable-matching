@@ -10,6 +10,9 @@ import numpy as np
 from agents import Man, Woman
 from evaluate import compute_social_welfare, compute_consistency
 
+# from hungarian_algorithm import algorithm
+from scipy.optimize import linear_sum_assignment
+
 
 class MatchAlgorithms(Enum):
     MPDA = 0
@@ -20,7 +23,7 @@ class MatchAlgorithms(Enum):
         return self.name
 
 
-def get_num_blocking(men: List[Man], women: List[Woman],
+def is_stable(men: List[Man], women: List[Woman],
                      pairing: List[Tuple[Man, Woman]]) -> bool:
     for i in range(len(pairing)):
         for j in range(i+1, len(pairing)):
@@ -33,51 +36,16 @@ def get_num_blocking(men: List[Man], women: List[Woman],
                     m2.utilities[w1] > m2.utilities[w2]:
                 return False
     return True
-    # blocking = list()
 
-    # for paired_man, paired_woman in pairing:
-    #     for man in men:
-    #         if man == paired_man:
-    #             continue
-    #         for m, w in pairing:
-    #             if m == man:
-    #                 other_woman = w
-    #                 break
-    #             if paired_woman.utilities[man] > paired_woman.utilities[woman] and \
-    #                 man.utilities[paired_woman] > man.utilities[other_woman]:
-    #                 return False
-
-    #     blocking.append(
-    #         np.greater(paired_woman.utilities[man],
-    #                     paired_woman.utilities[paired_man])
-    #         and
-    #         np.greater(man.utilities[paired_woman],
-    #                     man.utilities[other_woman]))
-    # for woman in women:
-    #     if woman == paired_woman:
-    #         continue
-    #     for m, w in pairing:
-    #         if w == woman:
-    #             other_man = m
-    #             break
-    #     blocking.append(
-    #         np.greater(paired_man.utilities[woman],
-    #                     paired_man.utilities[paired_woman])
-    #         and
-    #         np.greater(woman.utilities[paired_man],
-    #                     woman.utilities[other_man]))
-    # return np.sum(np.array(blocking) == True)
 
 def get_stable_pairs(men: List[Man], women: List[Woman],
                      pairings: List[List[Tuple[Man, Woman]]]
                      ) -> List[List[Tuple[Man, Woman]]]:
     pool = Pool(10)
-    fn = partial(get_num_blocking, men, women)
-    num_blocking_all = pool.map(fn, pairings)
+    fn = partial(is_stable, men, women)
+    is_stable_all = pool.map(fn, pairings)
     pool.close()
-    num_blocking_all = np.array(num_blocking_all)
-    # inds = np.where(num_blocking_all == np.min(num_blocking_all))[0]
-    inds = np.where(num_blocking_all)[0]
+    inds = np.where(is_stable_all)[0]
     stable_pairs = list()
     for idx in inds:
         stable_pairs.append(pairings[idx])
@@ -93,23 +61,43 @@ def get_all_pairs(men: List[Man],
     return pairings
 
 
-def get_welfare_optimal_paring(pairings: List[List[Tuple[Man, Woman]]]
+def get_welfare_optimal_pairing(pairings: List[List[Tuple[Man, Woman]]]
                                    ) -> List[Tuple[Man, Woman]]:
-        best_welfare = -1
-        best_pairing = None
-        for pairing in pairings:
-            welfare = compute_social_welfare(pairing)
-            if np.greater(welfare, best_welfare):
-                best_welfare = welfare
-                best_pairing = pairing
-        return best_pairing
+    # best_welfare = -1
+    # best_pairing = None
+    # for pairing in pairings:
+    #     welfare = compute_social_welfare(pairing)
+    #     if np.greater(welfare, best_welfare):
+    #         best_welfare = welfare
+    #         best_pairing = pairing
+    # return best_pairing
+    pool = Pool(10)
+    scores = pool.map(compute_social_welfare, pairings)
+    pool.close()
+    return pairings[np.argmax(scores)]
+
+
+def get_welfare_optimal_pairing_from_all_pairs(men: List[Man], women: List[Woman]) -> List[Tuple[Man, Woman]]:
+    # construct the bipartite graph
+    G = np.zeros(len(women) * len(men)).reshape(len(women), len(men))
+    for woman in women:
+        for man in men:
+            G[woman.id][man.id] = woman.utilities[man] + man.utilities[woman]
+    
+    # we need to invert the values since scipy solves for min weight
+    G = np.max(G) - G
+    row_inds, col_inds = linear_sum_assignment(G)
+    pairing = [(men[col_idx], women[row_idx]) for row_idx, col_idx in zip(row_inds, col_inds)]
+    return pairing
 
 
 def probabilistic(p, men: List[Man], women: List[Woman], stable=True) -> Optional[List[Tuple[Man, Woman]]]:
-    pairings = get_all_pairs(men, women)
     if stable:
+        pairings = get_all_pairs(men, women)
         pairings = get_stable_pairs(men, women, pairings)
-    welfare_optimal_pair = get_welfare_optimal_paring(pairings)
+    else:
+        welfare_optimal_pair = get_welfare_optimal_pairing_from_all_pairs(men, women)
+        # welfare_optimal_pair = get_welfare_optimal_pairing(pairings)
     
     x = random.random()
     if x >= p:
