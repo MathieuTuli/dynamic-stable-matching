@@ -108,9 +108,11 @@ def plot_tradeoff_hue_extra(
                         hue=annotations_all, palette=palette, ax=ax, s=100, legend="brief")
     ax.set_ylim(np.min(list(sw_all) + list(sw_extra)) * 0.9, np.max(list(sw_all) + list(sw_extra)) * 1.1)
     box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width * 0.88, box.height])
-    plt.xlabel(xlabel, fontsize=24)
-    plt.ylabel(ylabel, fontsize=24)
+    ax.set_position([box.x0, box.y0, box.width * 0.82, box.height])
+    plt.xlabel(xlabel, fontsize=22, labelpad = 10)
+    plt.ylabel(ylabel, fontsize=22, labelpad = 20)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     # g.ax.margins(.15)
     # g.legend.set_title(annotations_title)
     # g.fig.set_size_inches(7, 4.5)
@@ -119,9 +121,10 @@ def plot_tradeoff_hue_extra(
     for consistency, sw, label, color in zip(consistency_extra, sw_extra, labels_extra, colors_extra):
         g.scatter(consistency, sw, s=100, color=color, marker="x", label=label)
     # ax.legend()
-    g.legend(title=annotations_title, bbox_to_anchor=(
-        1.02, 1.12), loc=2, borderaxespad=0.)
-    plt.title(title, fontsize=18)
+    lgd = ax.legend(title=annotations_title, bbox_to_anchor=(
+        1.03, 1), loc=2, borderaxespad=0., fontsize=15)
+    lgd.get_title().set_fontsize('17')
+    ttl = plt.title(title, fontsize=24, pad=20, fontweight='bold')
     if fpath is not None:
         os.makedirs(os.path.dirname(fpath), exist_ok=True)
         fig.savefig(fpath)
