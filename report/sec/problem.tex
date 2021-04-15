@@ -1,0 +1,50 @@
+\section{Problem Formulation}
+% \begin{itemize}
+%     \item 1.5 - 2 pages
+%     \item Formulation for the set-up with utilities, excitement and dynamics
+%     \item Metrics
+%     \begin{itemize}
+%         \item Stability
+%         \item Social Welfare
+%         \item Consistency
+%         \item Explore social welfare vs. stability
+%     \end{itemize}
+% \end{itemize}
+In this section, we formally describe the dynamic stable matching setting, followed by several desirable properties that a matching should have.
+\subsection{Problem Setting}
+In the classical stable matching problem setting, there are $N$ men and $N$ women where each man $m_i$ has a strict preference ranking $\overrightarrow{\succ}_{m_i}$ for the women and vice versa, and the goal is to find a perfect and stable matching $M$ such that no pair of man $m$ and woman $w$ prefer each other to their current matches. In this project, we study a variant of the stable matching problem with the modification that each agent's preference is induced by underlying numerical utilities, and that the utilities may change over time, prompting a need to re-match the agents for stability.
+
+More formally, in our \textit{dynamic} stable matching setting, there are again $N$ men and $N$ women. Each man $m_i$ is associated with an underlying numerical utility vector $u_i \in \mathbb{R}^n$ satisfying $w_{j_1} \succ_{m_i} w_{j_2} \Leftrightarrow u_i(w_{j_1}) > u_i(w_{j_2})$ for every pair of women $(w_{j_1}, w_{j_2})$. Similarly, each women $w_j$ is associated with a utility vector $v_j \in \mathbb{R}^n$ consistent with her preferences for the group of men. The utilities are normalized, i.e., $\sum_{j=1}^N{u_i(w_j)} = 1$ for every $m_i$, and $\sum_{i=1}^N{v_j(m_i)} = 1$ for every $w_j$.
+
+In addition, each agent also has an excitement vector for each viable candidate. Formally, each man $m_i$ has an excitement vector $x_i \in \mathbb{R}^n$ where each $x_i(w_j)$ denotes the excitement man $m_i$ has for woman $w_j$. Similarly, each woman $w_j$ has an excitement vector $y_j \in \mathbb{R}^n$ representing her excitement towards each man. All excitement vectors are non-negative.
+
+Furthermore, we add a time dimension to the problem. For simplicity, instead of working with the infinite continuous time domain, we define a finite set of discrete times $t \in \{1, \ldots, T\}$, and each person's utility vector will change according to the excitement and and current matching over time according to the following rule. At each time step $t$, with everyone's utilities $\overrightarrow{u}^{t}$ and $\overrightarrow{v}^{t}$ and the computed matching $M^t$, we derive the updated utilities $\overrightarrow{u}^{t+1}$ and $\overrightarrow{v}^{t+1}$ for each man $m_i$ and woman $w_j$ as follows:
+    \begin{align*}
+        & u^{t+1}_i(w_j) = \begin{cases} u^t_i(w_j) * (1 + x_i(w_j)) &\text{if $M^t(m_i) \neq w_j$} \\ u^t_i(w_j) * (1 - x_i(w_j)) &\text{if $M^t(m_i) = w_j$} \end{cases},\\
+        & v^{t+1}_j(m_i) = \begin{cases} v^t_j(m_i) * (1 + y_j(m_i)) &\text{if $M^t(w_j) \neq m_i$} \\ v^t_j(m_i) * (1 - y_j(m_i)) &\text{if $M^t(w_j) = m_i$} \end{cases}.
+    \end{align*}
+In other words, the matched couple have decreased utilities towards each other and increased utilities for all other candidates. As a result, we will need to re-run the matching algorithm to generate a new matching $M^{t+1}$. Depending on the updated utilities $\overrightarrow{u}^{t+1}$ and $\overrightarrow{v}^{t+1}$, the couples from $M^t$ may not stay together in the new matching $M^{t+1}$.
+
+
+\subsection{Metrics}
+We design this new setting with inspirations from relationships in the real world, where people can divorce and enter new marriages over time due to changed utilities towards each other. We evaluate the matches with the following metrics.
+\paragraph{Stability} We measure the instability of a series of matches $(M^1, \ldots, M^T)$ with the mean number of blocking pairs, i.e.,
+\begin{equation}
+    \mbox{instability}(M^1, \ldots, M^T) = \frac{1}{T}\sum_{t=1}^T{\frac{\sigma(M^t)}{N}},
+\end{equation}
+where $\sigma(M^t)$ is the number of blocking pairs in $M^t$.
+\paragraph{Social Welfare} We define the social welfare of a series of matches as the mean utilities each agent derives from the matching:
+\begin{equation}
+    \mbox{sw}(M^1, \ldots, M^T) = \frac{1}{T}\sum_{t=1}^T{\frac{1}{2N}{\sum_{(m_i, w_j)\in M^t}{u_i(w_j) + v_j(m_i)}}}.
+\end{equation}
+\paragraph{Consistency} We also would like to encourage the couples to stay together over time. We define the consistency of a series of matches to be:
+\begin{equation}
+    \mbox{consistency}(M^1, \ldots, M^T) = \frac{1}{T-1}\sum_{t=1}^{T-1}{|\{(m, w): (m, w) \in M^t \wedge (m, w) \in M^{t+1}\}|}.
+\end{equation}
+\paragraph{Stability vs. Social Welfare} Note that stability and social welfare are both metrics that take into account of the preference profiles/utilities of the agents, but one does not necessarily imply the other. It is easy to show that a max social welfare matching $M$ is not necessarily stable, and a stable matching might not maximize social welfare.
+
+Max social welfare $\nRightarrow$ stability: Consider two men and two women where $m_1$ has utility 1 towards $w_1$ and utility 0 towards $w_2$, $m_2$ has utility 0.6 towards $w_1$ and 0.4 towards $w_2$, $w_1$ has utility 0.4 towards $m_1$ and 0.6 towards $m_2$, and $w_2$ has utility 0 towards $m_1$ and 1 towards $m_2$. In this setting, $M = \{(w_1, m_1), (w_2, m_2)\}$ is the matching that maximizes social welfare, but it is not stable as $m_2$ and $w_1$ both prefer each other more than the matched partner.
+
+Stability $\nRightarrow$ max social welfare: In the setting above, $M' = \{(m_1, w_2), (m_2, w_1)\}$ is a stable pair, but it achieves less social welfare than $M$.
+
+Our goal is to empirically evaluate a few matching algorithms in different settings of utility and excitement initialization, and identify algorithms that can produce matches with high stability, high social welfare and high consistency.

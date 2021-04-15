@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{epsfig}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[]{algorithm2e}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\title{CSC 2556 Project Proposal}
+\author{Yunlin (Ilene) Lu, Mathieu Tuli, Anqi (Joyce) Yang}
+\date{March 2021}
+% \setlength{\parindent}{0pt}
+% \setlength{\parskip}{12pt}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+In the classical stable matching problem setting, there are $n$ men and $n$ women where each man has a strict preference ranking for the women and vice versa, and the goal is to find a perfect and stable matching $M$ such that no pair of man $m$ and woman $w$ prefer each other to their current matches. In this project, we study a variant of the stable matching problem with the following two modifications.
+\begin{itemize}
+    \item First, each person's preference profile is induced by an underlying numerical utility vector. Specifically, each man $m_i$ is associated with an underlying utility vector $u_i \in \mathbb{R}^n$ satisfying $w_{j_1} \succ_i w_{j_2} \Leftrightarrow u_i(w_{j_1}) > u_i(w_{j_2})$ for every pair of women $(w_{j_1}, w_{j_2})$. Similarly, each women $w_j$ is associated with a utility vector $v_j \in \mathbb{R}^n$ consistent with her preferences for the group of men. The utilities are normalized, i.e., $\sum_{j}{u_i(w_j)} = 1$ for every $m_i$, and $\sum_{i}{v_j(m_i)} = 1$ for every $w_j$. We use $\overrightarrow{u} = \begin{bmatrix} u_1 & \ldots & u_n\end{bmatrix} \in \mathbb{R}^{n\times n}$ to denote the utilities of all men and $\overrightarrow{v}=\begin{bmatrix} v_1 & \ldots & v_n\end{bmatrix}\in \mathbb{R}^{n\times n}$ to denote the utilities of all women.
+    \item Secondly, we add a time dimension to the setting. For simplicity, instead of working with the infinite continuous time domain, we define a finite set of discrete times $t \in \{1, \ldots, T\}$, and each person's utility vector may change over time. Formally, we define a transition function $f(\overrightarrow{u}^t, \overrightarrow{v}^t, M)$ which takes in every person's utility vector at time step $t$ along with the matching made at time $t$, and outputs $(\overrightarrow{u}^{t+1}, \overrightarrow{v}^{t+1})$, which is every person's utility vector at the next time step $t+1$. For simplicity, $f$ is user-defined function that is fully-observable, and $f$ can be either non-parametric or parametric. At every time step $t$, we find a matching $M^{t}$ in response to $\overrightarrow{u}^t$ and $\overrightarrow{v}^t$. Depending on the updated utilities $\overrightarrow{u}^{t+1}$ and $\overrightarrow{v}^{t+1}$, the couples from $M^t$ may not stay together in the new matching $M^{t+1}$.
+\end{itemize}
+
+We design this new setting with inspirations from relationships in the real world, where people can divorce and enter new marriages over time. Thus, the matchings $M^1, \ldots, M^T$ should have the following desirable properties:
+\begin{itemize}
+    \item Stability: each matching $M^t$ should be as stable as possible, i.e., we should minimize $\sum_{t=1}^T{\sigma(M^t)}$, where $\sigma(M^t)$ is the number of blocking pairs in $M^t$.
+    \item Consistency: we would like the couples to stay together over time. There are several ways to evaluate this. For example, we can measure the ``divorce rate" between neighboring time steps and report an aggregated result (e.g., the mean divorce rate). We can also measure the average ``marriage" duration of all couples. Alternatively, we can plot a cumulative curve of the percentage of couples that have stayed together above a certain time duration threshold.
+\end{itemize}
+
+\section{Related Work}
+\paragraph{Stable Matching and Variants.}
+In their 1962 paper~\cite{galeshapley1962}, Gale and Shapeley first proposed the classical stable matching problem and the corresponding
+Gale-Shapeley algorithm, which has two versions: the Men-Proposing Deferred Acceptance (MPDA) algorithm and the Women-Proposing Deferred Acceptance (MPDA) algorithm, both of which are proven to generate a stable matching and terminate in $n^2$ moves and less~\cite{irving1989textbook}. MPDA is man-optimal where every women gets her worst possible partner, while WPDA is woman-optimal. To address the imbalance, Irving et al.~\cite{irving1987efficient} further proposed a sex-optimal stable matching algorithm that operates at $\mathcal{O}(n^4)$.
+
+There are many variants of the stable matching problem. The survey paper by Iwama and Miyazaki~\cite{iwama2008survey} provides a comprehensive overview of the popular variants, including the many-to-one matching (Hospitals/Residents Matching Problem), non-bipartite matching (Roommates Matching Problem), many-to-many matching, three-dimensional matching with three parties, and preferences with incomplete lists and/or ties. In addition, Anshelevich et al.~\cite{Anshelevich2013} extends the preference profile with numerical utilities to analyze the overall social welfare of stable matching. Nevertheless, none of the existing settings add a time dimension, so our setting remains novel.
+
+% There are many existing algorithms of which can take advantage of. The Gale-Shapeley Algorithm \cite{dubins1981machiavelli} is a strategyproof algorithm that terminates in $n^2$ moves or less, \cite{floreen2010almost} proposed a variant of the Gale-Shapeley Algorithm designed to operate in limited information environments, and \cite{irving1987efficient} further defined another Gale-Shapeley variant that operates at $\mathcal{O}(n^4)$ but resolves issues in the original algorithm heavily favouring one side (men or women) (that is, this variant is more fair).
+
+\paragraph{Real-World Marriage Satisfaction Modelling.} Additionally, there are many existing studies from which we can base our utility transition function. For example, statistical studies that model marital satisfaction over the ``newlywed year''~\cite{lavner2010patterns}, models of marital satisfaction in parenthood \cite{hirschberger2009attachment}, and models of divorce in Spain~\cite{duato2013mathematical} can be used.
+
+\section{Project Goals}
+Our primary goal is to evaluate the consistency of certain stable matching algorithms in the new setting with different transition functions $f$ over a set of random initial utilities $(\overrightarrow{u}^0, \overrightarrow{v}^0)$. For the algorithms, we will evaluate MPDA, WPDA, and the sex-optimal algorithm~\cite{irving1987efficient}, which are proven to generate stable matching at each round. For transition functions $f$, we plan to start with a few simple baselines: (1) a function that decays the utilities matched couples have for each other; (2) a function that decays or boosts the utilities matched couples have for each other randomly; (3) a function that adds zero-mean Gaussian perturbation to the utilities matched couples have for each other; (4) a function that adds zero-mean Gaussian noises to all utilities; (5) a function that updates men and women's utilities differently. If time allows, we can further design more sophisticated transition functions based on the real world marriage and divorce statistical models in different geographic regions of the world.
+
+With our experiments, we hope to answer the following questions: (1) How do the algorithms perform under different transition functions? (2) How sensitive are the algorithms to the parameters of the transition function $f$ (if $f$ is parametric)? (3) How do different algorithms react to different initial utilities $(\overrightarrow{u}^0, \overrightarrow{v}^0)$?
+
+Since the overall objective of this problem is to minimize both stability and consistency, a stretch goal would be to develop a matching algorithm that can achieve better combined stability and consistency than the classical stable matching algorithms with respect to a specific transition function (e.g., zero-mean Gaussian perturbations to all utilities). We will evaluate this algorithm empirically, and if time allows, analyze the algorithm to see if the better performance is theoretically guaranteed.
+
+%===============================================================================
+
+\bibliographystyle{abbrv}
+\bibliography{ref}
+
+\end{document}

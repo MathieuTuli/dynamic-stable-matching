@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{fullpage}
+\usepackage{epsfig}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[]{algorithm2e}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
+\usepackage{color}
+\usepackage{subcaption}
+\usepackage{subfiles}
+\graphicspath{figures/}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\title{Dynamic Stable Matching}
+\author{Yunlin (Ilene) Lu\footnote{Equal Contribution} $\qquad$ Mathieu Tuli${}^*$ $\qquad$ Anqi (Joyce) Yang${}^*$}
+\date{April 2021}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{12pt}
+\begin{document}
+
+\maketitle
+
+% \vspace{-10mm}
+% \section{Introduction}
+% \subfile{sec/intro}
+
+% \section{Related Work}
+% \subfile{sec/related}
+
+% \section{Problem Formulation}
+% \subfile{sec/problem}
+
+% \section{Experiments}
+% \subfile{sec/experiment}
+
+% \section{Dicussion}
+% \subfile{sec/discussion}
+
+\input{sec/intro}
+\input{sec/related}
+\input{sec/problem}
+\input{sec/experiment}
+\input{sec/discussion}
+
+\bibliographystyle{abbrv}
+\bibliography{ref}
+
+\end{document}
