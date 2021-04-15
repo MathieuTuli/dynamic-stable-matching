@@ -13,6 +13,8 @@
 \usepackage{color}
 \usepackage{subcaption}
 \usepackage{subfiles}
+\usepackage{titlesec}
+
 \graphicspath{figures/}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -22,7 +24,8 @@
 \author{Yunlin (Ilene) Lu\footnote{Equal Contribution} $\qquad$ Mathieu Tuli${}^*$ $\qquad$ Anqi (Joyce) Yang${}^*$}
 \date{April 2021}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{12pt}
+\setlength{\parskip}{10pt}
+\titlespacing*{\paragraph}{0pt}{0.5\baselineskip}{0.5\baselineskip}
 \begin{document}
 
 \maketitle
@@ -43,6 +46,7 @@
 % \section{Dicussion}
 % \subfile{sec/discussion}
 
+\vspace{-10mm}
 \input{sec/intro}
 \input{sec/related}
 \input{sec/problem}
