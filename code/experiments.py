@@ -20,7 +20,7 @@ if __name__ == "__main__":
     diste = [
         # [0.1],
         # [0.],
-        [round(x, 9) for x in np.linspace(1, 2, 200)],
+        [round(x, 9) for x in np.linspace(0, 1, 200)],
         [round(x, 9) for x in np.linspace(1, 10, 1)],
     ]
     values = [0.5, 1, 10]
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     #                   names, annotations_title='Excitements', fpath='figures/mpda_dynamics_excitement.png')
     plot_tradeoff_hue_fixed_mean(social_welfares, consistencies,
                                  annotations_title='Excitement', fpath='figures/mpda_dynamics_excitement_mean.png',
-                                 title=f'N=20, T=10, $\mu_nu$=1, $\sigma_u$=1, $\mu_e \in $ [1, 2], $\sigma_e$ = 1')
+                                 title=f'N=20, T=10, $\mu_nu$=1, $\sigma_u$=1, $\mu_e \in $ [0, 1], $\sigma_e$ = 1')
     dist = [
         [1],
         [1],
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     diste = [
         # [0.1],
         # [0.],
-        [round(x, 9) for x in np.linspace(1, 2, 1)],
+        [round(x, 9) for x in np.linspace(.1, 2, 1)],
         [round(x, 9) for x in np.linspace(0, 10, 200)],
     ]
     values = [0.5, 1, 10]
@@ -152,7 +152,7 @@ if __name__ == "__main__":
     #                   names, annotations_title='Excitements', fpath='figures/mpda_dynamics_excitement.png')
     plot_tradeoff_hue_fixed_mean(social_welfares, consistencies,
                                  annotations_title='Excitement', fpath='figures/mpda_dynamics_excitement_std.png',
-                                 title=f'N=20, T=10, $\mu_u$=1, $\sigma_u$=1, $\mu_e$=1, $\sigma_e \in $ [0, 10]')
+                                 title=f'N=20, T=10, $\mu_u$=1, $\sigma_u$=1, $\mu_e$=0.1, $\sigma_e \in $ [0, 10]')
 
     dist = [
         [round(x, 9) for x in np.linspace(1, 10, 1)],
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     ]
     diste = [
         [0.1],
-        [0.],
+        [0.1],
     ]
     values = [0.5, 1, 10]
     parameters = [
@@ -214,4 +214,4 @@ if __name__ == "__main__":
         #     '')
     plot_tradeoff_hue_fixed_mean(social_welfares, consistencies,
                                  annotations_title='Initializations', fpath='figures/mpda_dynamics_initliazation.png',
-                                 title=f'N=20, T=10, $\mu_u$=1, $\sigma_u \in$ [0, 10], $\mu_e$=0.5, $\sigma_e$=0.5')
+                                 title=f'N=20, T=10, $\mu_u$=1, $\sigma_u \in$ [0, 10], $\mu_e$=0.1, $\sigma_e$=0.1')
