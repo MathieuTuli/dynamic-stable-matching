@@ -4,7 +4,7 @@ import pdb
 import random
 
 import numpy as np
-from visualization import plot_tradeoff
+from visualization import plot_tradeoff, plot_tradeoff_hue_extra, plot_tradeoff_hue
 
 from dynamics import (
     initialize_utilities_from_array,
@@ -21,7 +21,7 @@ from dynamics import (
 from evaluate import Evaluator, compute_consistency, compute_social_welfare
 from utils import config_file_parser
 from agents import Man, Woman
-from match import deterministic, is_stable
+from match import deterministic, is_stable, MPDA, WPDA, get_num_blocking
 
 
 def main():
@@ -82,28 +82,53 @@ def main():
           excitement['name'] + " excitement")
 
     update_algorithm = update_utilities_with_match
-    most_recent_match = None
     results_all = []
+    instabilities_all = []
     annotations_all = []
     for consistency_num in range(size + 1):
         initialize(men, women)
         results = []
+        instabilities = []
+        most_recent_match = None
         print("Consistency thresh:", consistency_num)
         for i in range(horizon):
             print("Timestep " + str(i) + ": ")
-            # print("Men's preferences:")
-            # for man in men:
-            #     print([w.id for w in man.preferences])
-            #     print([(w.id, man.utilities[w]) for w in man.preferences])
-            # print("Women's preferences:")
-            # for woman in women:
-            #     print([m.id for m in woman.preferences])
-            #     print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
             new_match = deterministic(consistency_num, men, women, most_recent_match)
             if new_match is None:
                 # no change
                 new_match = most_recent_match
+            
+
+            if i > 0:
+                welfare = compute_social_welfare(new_match)
+                instability = get_num_blocking(men, women, new_match) * 1.0 / len(men)
+                consistency = compute_consistency(new_match, most_recent_match)
+                results.append([welfare, consistency])
+                instabilities.append(instability)
+                print(welfare, consistency)
+                print("Instability:", instability)
+            
+            most_recent_match = new_match
+            print("Stability:", is_stable(men, women, most_recent_match))
+            update_algorithm(men, women)
+        
+        results = np.array(results)
+        results_all.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
+        annotations_all.append(consistency_num * 1.0 / size)
+        instabilities_all.append(np.mean(instabilities))
+        # annotations_all.append(f"{consistency_num * 1.0 / size:.4f}")
+
+    results_extra = []
+    labels_extra = ['MPDA', 'WPDA']
+    for alg in [MPDA, WPDA]:
+        initialize(men, women)
+        results = []
+        most_recent_match = None
+        for i in range(horizon):
+            print("Timestep " + str(i) + ": ")
+
+            new_match = alg(men, women)
 
             if i > 0:
                 welfare = compute_social_welfare(new_match)
@@ -116,11 +141,29 @@ def main():
             update_algorithm(men, women)
         
         results = np.array(results)
-        results_all.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
-        annotations_all.append(f"c={consistency_num * 1.0 / size:.4f}")
-
+        results_extra.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
+    
     results_all = np.array(results_all)
-    plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
+    results_extra = np.array(results_extra)
+    colors_extra = ["red", "blue"]
+    # plot_tradeoff_hue(
+    #     results_all[:, 0], results_all[:, 1],
+    #     annotations_all, "consistency threshold",
+    #     title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
+    plot_tradeoff_hue_extra(
+        results_all[:, 0], results_all[:, 1],
+        annotations_all, "consistency threshold",
+        results_extra[:, 0], results_extra[:, 1],
+        labels_extra, colors_extra,
+        title=f"Det (N={size}, T={horizon})")
+    plot_tradeoff_hue_extra(
+        results_all[:, 0], instabilities_all,
+        annotations_all, "consistency threshold",
+        results_extra[:, 0], [0, 0],
+        labels_extra, colors_extra,
+        xlabel="Mean Instability",
+        title=f"Det (N={size}, T={horizon})")
+    # plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
     
 
 

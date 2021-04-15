@@ -4,7 +4,7 @@ import pdb
 import random
 
 import numpy as np
-from visualization import plot_tradeoff
+from visualization import plot_tradeoff, plot_tradeoff_hue_extra
 
 from dynamics import (
     initialize_utilities_from_array,
@@ -21,25 +21,26 @@ from dynamics import (
 from evaluate import Evaluator, compute_consistency, compute_social_welfare
 from utils import config_file_parser
 from agents import Man, Woman
-from match import probabilistic, is_stable
+from match import probabilistic, is_stable, MPDA, WPDA
 
 
 def main():
     seed = 1000
 
-    horizon = 10
-    size = 6
+    horizon = 100
+    # size = 6
+    size = 100
     
     men = [Man() for i in range(size)]
     women = [Woman() for i in range(size)]
     
     # initialization = {'name': 'constant', 'value': 0.1}
-    initialization = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
+    initialization = {'name': 'gaussian', 'mean': 1.0, 'var': 0.1}
     # excitement = {'name': 'constant', 'value': 0.1}
     excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     update = 'match'
 
-    guarantee_stability = True
+    guarantee_stability = False
 
     def initialize(men, women):
         random.seed(seed)
@@ -81,10 +82,10 @@ def main():
           excitement['name'] + " excitement")
 
     update_algorithm = update_utilities_with_match
-    most_recent_match = None
     results_all = []
     annotations_all = []
     for prob in np.linspace(0.0, 1.0, num=50):
+        most_recent_match = None
         initialize(men, women)
         results = []
         print("prob:", prob)
@@ -116,10 +117,47 @@ def main():
         
         results = np.array(results)
         results_all.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
-        annotations_all.append(f"p={prob:.4f}")
+        annotations_all.append(prob)
+        # annotations_all.append(f"p={prob:.4f}")
+    
+        results_extra = []
+    labels_extra = ['MPDA', 'WPDA']
+    for alg in [MPDA, WPDA]:
+        initialize(men, women)
+        results = []
+        most_recent_match = None
+        for i in range(horizon):
+            print("Timestep " + str(i) + ": ")
+
+            new_match = alg(men, women)
+
+            if i > 0:
+                welfare = compute_social_welfare(new_match)
+                consistency = compute_consistency(new_match, most_recent_match)
+                results.append([welfare, consistency])
+                print(welfare, consistency)
+            
+            most_recent_match = new_match
+            print("Stability:", is_stable(men, women, most_recent_match))
+            update_algorithm(men, women)
+        
+        results = np.array(results)
+        results_extra.append([np.mean(results[:, 0]), np.mean(results[:, 1])])
+    
+    results_all = np.array(results_all)
+    results_extra = np.array(results_extra)
+    colors_extra = ["red", "blue"]
 
     results_all = np.array(results_all)
-    plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
+    plot_tradeoff_hue_extra(
+        results_all[:, 0], results_all[:, 1],
+        annotations_all, "probability",
+        results_extra[:, 0], results_extra[:, 1],
+        labels_extra, colors_extra,
+        title=f"Prob (N={size}, T={horizon})")
+    results_extra = np.array(results_extra)
+    colors_extra = ["red", "blue"]
+    # plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
     
 
 

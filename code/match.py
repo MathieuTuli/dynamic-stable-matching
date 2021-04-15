@@ -38,6 +38,22 @@ def is_stable(men: List[Man], women: List[Woman],
     return True
 
 
+def get_num_blocking(men: List[Man], women: List[Woman],
+              pairing: List[Tuple[Man, Woman]]) -> int:
+    count = 0
+    for i in range(len(pairing)):
+        for j in range(i+1, len(pairing)):
+            m1, w1 = pairing[i]
+            m2, w2 = pairing[j]
+            if m1.utilities[w2] > m1.utilities[w1] and \
+                    w2.utilities[m1] > w2.utilities[m2]:
+                count += 1
+            if w1.utilities[m2] > w1.utilities[m1] and \
+                    m2.utilities[w1] > m2.utilities[w2]:
+                count += 1
+    return count
+
+
 def get_stable_pairs(men: List[Man], women: List[Woman],
                      pairings: List[List[Tuple[Man, Woman]]]
                      ) -> List[List[Tuple[Man, Woman]]]:
