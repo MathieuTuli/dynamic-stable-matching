@@ -2,7 +2,7 @@ outputs
 # REPO SPECIFIC
 *checkpoint*
 *xlsx*
-*.png*
+#*.png*
 scripts/*
 
 # Stock Python things
