@@ -44,7 +44,7 @@ def initialize_utilities_constant(men: List[Man],
 def initialize_utilities_gaussian(men: List[Man],
                                   women: List[Woman],
                                   mu: float, sigma: float,
-                                  clip: bool=True) -> None:
+                                  clip: bool=False) -> None:
     utilities_all = np.random.normal(mu, sigma, 2 * len(men) * len(women))
     if clip:
         utilities_all[utilities_all < 0] = 0
