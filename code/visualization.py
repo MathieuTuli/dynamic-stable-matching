@@ -53,7 +53,7 @@ def plot_tradeoff_hue_fixed_mean(sw_all, consistency_all,
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.88, box.height])
     plt.xlabel('Consistency', fontsize=24)
-    plt.ylabel('Mean social welfare', fontsize=24)
+    plt.ylabel('Social welfare', fontsize=24)
     # ax.legend(title=annotations_title, bbox_to_anchor=(
     #     1.02, 1.12), loc=2, borderaxespad=0.)
     fig.colorbar(cm.ScalarMappable(norm=matplotlib.colors.Normalize(0, 10),
@@ -183,48 +183,52 @@ def plot_utility_matching(
     men_utilities, women_utilities, men_match, women_match, title=None, fpath=None
 ):
 
-    fig, axs = plt.subplots(len(men_utilities), 2, sharey=True, figsize=(10, 8))
+    fig, axs = plt.subplots(len(men_utilities), 2,
+                            sharey=True, figsize=(10, 8))
 
     lblue_patch = mpatches.Patch(color='#9dbccf', label='Unmatched woman')
     dblue_patch = mpatches.Patch(color='#1f4d69', label='Matched woman')
     lred_patch = mpatches.Patch(color='#f7abab', label='Unmatched man')
     dred_patch = mpatches.Patch(color='#803333', label='Matched man')
-    axs[0,1].legend(handles=[lblue_patch,dblue_patch,lred_patch,dred_patch],bbox_to_anchor=(
+    axs[0, 1].legend(handles=[lblue_patch, dblue_patch, lred_patch, dred_patch], bbox_to_anchor=(
         1.05, 1), loc=2, borderaxespad=0., fontsize=15)
 
     fig.add_subplot(111, frameon=False)
     # hide tick and tick label of the big axes
-    plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+    plt.tick_params(labelcolor='none', top=False,
+                    bottom=False, left=False, right=False)
     plt.grid(False)
 
     plt.ylabel("Utility", fontsize=22, labelpad=10)
 
-
-    plt.setp(axs, ylim=(0,0.3))
+    plt.setp(axs, ylim=(0, 0.3))
 
     for (i, man_utilities) in enumerate(men_utilities):
-        #9dbccf 7798AB
-        clr = ['#1f4d69' if (x==men_match[i]) else '#9dbccf' for x in [w.id for w in man_utilities.keys()]]
-        p = sns.barplot(x = ['woman '+str(w.id) for w in man_utilities.keys()],y=list(man_utilities.values()), ax=axs[i,0], palette=clr)
-        p.set_xticklabels(p.get_xticklabels(),rotation=45, fontsize=16)
+        # 9dbccf 7798AB
+        clr = ['#1f4d69' if (x == men_match[i]) else '#9dbccf' for x in [
+            w.id for w in man_utilities.keys()]]
+        p = sns.barplot(x=['woman '+str(w.id) for w in man_utilities.keys()],
+                        y=list(man_utilities.values()), ax=axs[i, 0], palette=clr)
+        p.set_xticklabels(p.get_xticklabels(), rotation=45, fontsize=16)
 
     for (i, woman_utilities) in enumerate(women_utilities):
-        #f7abab 803333
-        clr = ['#803333' if (x==women_match[i]) else '#f7abab' for x in [m.id for m in woman_utilities.keys()]]
-        p = sns.barplot(x = ['man '+str(m.id) for m in woman_utilities.keys()],y=list(woman_utilities.values()), ax=axs[i,1], palette=clr)
-        p.set_xticklabels(p.get_xticklabels(),rotation=45, fontsize=16)
+        # f7abab 803333
+        clr = ['#803333' if (x == women_match[i]) else '#f7abab' for x in [
+            m.id for m in woman_utilities.keys()]]
+        p = sns.barplot(x=['man '+str(m.id) for m in woman_utilities.keys()],
+                        y=list(woman_utilities.values()), ax=axs[i, 1], palette=clr)
+        p.set_xticklabels(p.get_xticklabels(), rotation=45, fontsize=16)
 
     for i in range(len(men_utilities)-1):
-        axs[i,0].xaxis.set_visible(False)
-        axs[i,1].xaxis.set_visible(False)
+        axs[i, 0].xaxis.set_visible(False)
+        axs[i, 1].xaxis.set_visible(False)
 
-    axs[0,0].set_title('Men', fontsize=22, pad=10)
-    axs[0,1].set_title('Women', fontsize=22, pad=10)
+    axs[0, 0].set_title('Men', fontsize=22, pad=10)
+    axs[0, 1].set_title('Women', fontsize=22, pad=10)
 
     fig.subplots_adjust(bottom=0.15, top=0.85, right=0.7)
 
     ttl = plt.title(title, fontsize=24, pad=40, fontweight='bold')
-
 
     if fpath is not None:
         os.makedirs(os.path.dirname(fpath), exist_ok=True)
