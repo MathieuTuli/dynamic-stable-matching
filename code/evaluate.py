@@ -83,8 +83,7 @@ class Evaluator():
         return longest
 
     def evaluate_consistency_rate(self,
-                         history: List[List[Tuple[int, int]]]) -> List[float]:
-        
+                                  history: List[List[Tuple[int, int]]]) -> List[float]:
         """
         Evaluating the consistency of matched pairs across timesteps
         inputs:
@@ -110,7 +109,7 @@ class Evaluator():
 
 def compute_social_welfare(pairing: List[Tuple[Man, Woman]]) -> float:
     welfare = np.mean([man.utilities[woman] + woman.utilities[man]
-                           for man, woman in pairing])
+                       for man, woman in pairing])
     return welfare / 2
 
 

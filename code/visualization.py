@@ -1,6 +1,8 @@
+from matplotlib import cm
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import seaborn as sns
+import matplotlib
 
 import os
 import numpy as np
@@ -22,6 +24,44 @@ def plot_tradeoff(sw_all, consistency_all, annotations_all=None, title=None, fpa
     plt.tight_layout()
     if fpath is not None:
         os.makedirs(os.path.dirname(fpath), exist_ok=True)
+        fig.savefig(fpath)
+    else:
+        plt.show()
+    plt.close()
+
+
+def plot_tradeoff_hue_fixed_mean(sw_all, consistency_all,
+                                 annotations_title, title=None,
+                                 fpath=None, palette="crest"):
+    sns.set_style('whitegrid')
+    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    maps = [cm.get_cmap("Purples"), cm.get_cmap('Greys'), cm.get_cmap('Reds'), cm.get_cmap(
+        'Blues'), cm.get_cmap('Greens'), cm.get_cmap("Purples")]
+    for idx, (mean, data) in enumerate(sw_all.items()):
+        colour = maps[idx]
+        sharpness = 0.2
+        for j, (var, val) in enumerate(data):
+            ax.scatter(x=[consistency_all[mean][j][1]],
+                       y=[val],
+                       c=colour(sharpness + (1 - sharpness) * j / len(data)),
+                       # hue=annotations_all,
+                       # palette=palette,
+                       # ax=ax,
+                       s=100,
+                       label=f'$\mu={mean}, \sigma^2={var}$'
+                       )
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.88, box.height])
+    plt.xlabel('Consistency', fontsize=24)
+    plt.ylabel('Mean social welfare', fontsize=24)
+    # ax.legend(title=annotations_title, bbox_to_anchor=(
+    #     1.02, 1.12), loc=2, borderaxespad=0.)
+    fig.colorbar(cm.ScalarMappable(norm=matplotlib.colors.Normalize(0, 10),
+                                   cmap=maps[0]), ax=ax)
+    plt.title(title, fontsize=18)
+    if fpath is not None:
+        os.makedirs(os.path.dirname(fpath), exist_ok=True)
+        plt.tight_layout()
         fig.savefig(fpath)
     else:
         plt.show()
@@ -107,18 +147,19 @@ def plot_tradeoff_hue_extra(
     #     ax.scatter(consistency, sw)
     g = sns.scatterplot(x=consistency_all, y=sw_all,
                         hue=annotations_all, palette=palette, ax=ax, s=100, legend="brief")
-    ax.set_ylim(np.min(list(sw_all) + list(sw_extra)) * 0.9, np.max(list(sw_all) + list(sw_extra)) * 1.1)
+    ax.set_ylim(np.min(list(sw_all) + list(sw_extra)) * 0.9,
+                np.max(list(sw_all) + list(sw_extra)) * 1.1)
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.82, box.height])
-    plt.xlabel(xlabel, fontsize=22, labelpad = 10)
-    plt.ylabel(ylabel, fontsize=22, labelpad = 20)
+    plt.xlabel(xlabel, fontsize=22, labelpad=10)
+    plt.ylabel(ylabel, fontsize=22, labelpad=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     # g.ax.margins(.15)
     # g.legend.set_title(annotations_title)
     # g.fig.set_size_inches(7, 4.5)
     # g.ax.margins(.15)
-    
+
     for consistency, sw, label, color in zip(consistency_extra, sw_extra, labels_extra, colors_extra):
         g.scatter(consistency, sw, s=100, color=color, marker="x", label=label)
     # ax.legend()
