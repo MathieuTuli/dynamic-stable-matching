@@ -81,7 +81,7 @@ if __name__ == "__main__":
     #                   names, annotations_title='Excitements', fpath='figures/mpda_dynamics_excitement.pdf')
     plot_tradeoff_hue_fixed_mean(social_welfares, consistencies,
                                  min_val=0, max_val=1,
-                                 colobar_title='$\sigma_u$',
+                                 colobar_title='$\mu_e$',
                                  annotations_title='Excitement', fpath='figures/mpda_dynamics_excitement_mean.pdf',
                                  title=f'N=20, T=10, $\mu_u$=10, $\sigma_u$=10, $\mu_e \in $ [0, 1], $\sigma_e$ = 0.1')
     dist = [
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     #                   names, annotations_title='Excitements', fpath='figures/mpda_dynamics_excitement.pdf')
     plot_tradeoff_hue_fixed_mean(social_welfares, consistencies,
                                  min_val=0, max_val=1,
-                                 colobar_title='$\sigma_u$',
+                                 colobar_title='$\sigma_e$',
                                  annotations_title='Excitement', fpath='figures/mpda_dynamics_excitement_std.pdf',
                                  title=f'N=20, T=10, $\mu_u$=10, $\sigma_u$=10, $\mu_e$=0.1, $\sigma_e \in $ [0, 1]')
 
