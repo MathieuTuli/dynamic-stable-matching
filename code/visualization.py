@@ -107,7 +107,12 @@ def plot_tradeoff_hue_extra(
     #     ax.scatter(consistency, sw)
     g = sns.scatterplot(x=consistency_all, y=sw_all,
                         hue=annotations_all, palette=palette, ax=ax, s=100, legend="brief")
-    ax.set_ylim(np.min(list(sw_all) + list(sw_extra)) * 0.9, np.max(list(sw_all) + list(sw_extra)) * 1.1)
+    ylim_min = np.min(list(sw_all) + list(sw_extra))
+    if ylim_min < 0.01:
+        ylim_min = -0.005
+    else:
+        ylim_min *= 0.9
+    ax.set_ylim(ylim_min, np.max(list(sw_all) + list(sw_extra)) * 1.1)
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.82, box.height])
     plt.xlabel(xlabel, fontsize=22, labelpad = 10)

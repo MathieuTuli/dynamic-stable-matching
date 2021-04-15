@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import pdb
 import random
+import os
 
 import numpy as np
 from visualization import plot_tradeoff, plot_tradeoff_hue_extra
@@ -27,20 +28,21 @@ from match import probabilistic, is_stable, MPDA, WPDA
 def main():
     seed = 1000
 
-    horizon = 100
-    # size = 6
-    size = 100
+    horizon = 10
+    size = 10
+    # size = 100
     
     men = [Man() for i in range(size)]
     women = [Woman() for i in range(size)]
     
     # initialization = {'name': 'constant', 'value': 0.1}
-    initialization = {'name': 'gaussian', 'mean': 1.0, 'var': 0.1}
+    initialization = {'name': 'gaussian', 'mean': 10, 'var': 10}
     # excitement = {'name': 'constant', 'value': 0.1}
     excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     update = 'match'
 
-    guarantee_stability = False
+    guarantee_stability = True
+    # guarantee_stability = False
 
     def initialize(men, women):
         random.seed(seed)
@@ -100,7 +102,7 @@ def main():
             #     print([m.id for m in woman.preferences])
                 # print([(m.id, woman.utilities[m]) for m in woman.preferences])
 
-            new_match = probabilistic(1.0 if i == 0 else prob, men, women, stable=guarantee_stability)
+            new_match = probabilistic(0.0 if i == 0 else prob, men, women, stable=guarantee_stability)
             if new_match is None:
                 # no change
                 new_match = most_recent_match
@@ -149,14 +151,31 @@ def main():
     colors_extra = ["red", "blue"]
 
     results_all = np.array(results_all)
+    # plot_tradeoff_hue_extra(
+    #     results_all[:, 0], results_all[:, 1],
+    #     annotations_all, "probability",
+    #     results_extra[:, 0], results_extra[:, 1],
+    #     labels_extra, colors_extra,
+    #     title=f"Prob (N={size}, T={horizon})")
+    
+    out_dir = "visualization"
+    alg_name = "Prob" if not guarantee_stability else "Prob-Stable"
     plot_tradeoff_hue_extra(
         results_all[:, 0], results_all[:, 1],
         annotations_all, "probability",
         results_extra[:, 0], results_extra[:, 1],
         labels_extra, colors_extra,
-        title=f"Prob (N={size}, T={horizon})")
-    results_extra = np.array(results_extra)
-    colors_extra = ["red", "blue"]
+        fpath=os.path.join(out_dir, f"{alg_name}_{size}_{horizon}_{initialization['mean']}_{initialization['var']}.pdf"),
+        title=f"{alg_name} (N={size}, T={horizon}, $\mu_u$={initialization['mean']}, $\sigma_u$={initialization['var']}, , $\mu_e$={excitement['mean']}, $\sigma_e$={excitement['var']})")
+    plot_tradeoff_hue_extra(
+        results_all[:, 0], results_all[:, 1],
+        annotations_all, "probability",
+        results_extra[:, 0], results_extra[:, 1],
+        labels_extra, colors_extra,
+        fpath=os.path.join(out_dir, f"{alg_name}_{size}_{horizon}_{initialization['mean']}_{initialization['var']}.png"),
+        title=f"{alg_name} (N={size}, T={horizon}, $\mu_u$={initialization['mean']}, $\sigma_u$={initialization['var']}, , $\mu_e$={excitement['mean']}, $\sigma_e$={excitement['var']})")
+
+
     # plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
     
 

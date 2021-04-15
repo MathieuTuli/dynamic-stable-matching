@@ -118,7 +118,7 @@ def probabilistic(p: float, men: List[Man], women: List[Woman], stable=True) -> 
             men, women)
 
     x = random.random()
-    if x >= p:
+    if x < p:
         # do nothing
         return None
     else:

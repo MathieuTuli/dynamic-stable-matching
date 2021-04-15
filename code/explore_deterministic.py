@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import pdb
 import random
+import os
 
 import numpy as np
 from visualization import plot_tradeoff, plot_tradeoff_hue_extra, plot_tradeoff_hue
@@ -31,14 +32,15 @@ def main():
     horizon = 100
     # size = 10
     size = 100
+    # size = 20
     
     men = [Man() for i in range(size)]
     women = [Woman() for i in range(size)]
     
     # initialization = {'name': 'constant', 'value': 0.1}
-    initialization = {'name': 'gaussian', 'mean': 10, 'var': 1}
-    excitement = {'name': 'constant', 'value': 0.1}
-    # excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
+    initialization = {'name': 'gaussian', 'mean': 10, 'var': 10}
+    # excitement = {'name': 'constant', 'value': 0.1}
+    excitement = {'name': 'gaussian', 'mean': 0.1, 'var': 0.1}
     update = 'match'
 
     guarantee_stability = False
@@ -151,19 +153,37 @@ def main():
     #     results_all[:, 0], results_all[:, 1],
     #     annotations_all, "consistency threshold",
     #     title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
+    out_dir = "visualization"
     plot_tradeoff_hue_extra(
         results_all[:, 0], results_all[:, 1],
         annotations_all, "consistency threshold",
         results_extra[:, 0], results_extra[:, 1],
         labels_extra, colors_extra,
-        title=f"Det (N={size}, T={horizon})")
+        fpath=os.path.join(out_dir, f"Det_{size}_{horizon}_{initialization['mean']}_{initialization['var']}.pdf"),
+        title=f"Det (N={size}, T={horizon}, $\mu_u$={initialization['mean']}, $\sigma_u$={initialization['var']}, , $\mu_e$={excitement['mean']}, $\sigma_e$={excitement['var']})")
+    plot_tradeoff_hue_extra(
+        results_all[:, 0], results_all[:, 1],
+        annotations_all, "consistency threshold",
+        results_extra[:, 0], results_extra[:, 1],
+        labels_extra, colors_extra,
+        fpath=os.path.join(out_dir, f"Det_{size}_{horizon}_{initialization['mean']}_{initialization['var']}.png"),
+        title=f"Det (N={size}, T={horizon}, $\mu_u$={initialization['mean']}, $\sigma_u$={initialization['var']}, , $\mu_e$={excitement['mean']}, $\sigma_e$={excitement['var']})")
     plot_tradeoff_hue_extra(
         results_all[:, 0], instabilities_all,
         annotations_all, "consistency threshold",
         results_extra[:, 0], [0, 0],
         labels_extra, colors_extra,
+        fpath=os.path.join(out_dir, f"Det_sw_{size}_{horizon}_{initialization['mean']}_{initialization['var']}.pdf"),
         xlabel="Instability",
-        title=f"Det (N={size}, T={horizon})")
+        title=f"Det (N={size}, T={horizon}, $\mu_u$={initialization['mean']}, $\sigma_u$={initialization['var']}, , $\mu_e$={excitement['mean']}, $\sigma_e$={excitement['var']})")
+    plot_tradeoff_hue_extra(
+        results_all[:, 0], instabilities_all,
+        annotations_all, "consistency threshold",
+        results_extra[:, 0], [0, 0],
+        labels_extra, colors_extra,
+        fpath=os.path.join(out_dir, f"Det_sw_{size}_{horizon}_{initialization['mean']}_{initialization['var']}.png"),
+        xlabel="Instability",
+        title=f"Det (N={size}, T={horizon}, $\mu_u$={initialization['mean']}, $\sigma_u$={initialization['var']}, , $\mu_e$={excitement['mean']}, $\sigma_e$={excitement['var']})")
     # plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
     
 
