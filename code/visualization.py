@@ -1,5 +1,6 @@
 from matplotlib import cm
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.patches as mpatches
 import seaborn as sns
 import matplotlib
@@ -31,6 +32,8 @@ def plot_tradeoff(sw_all, consistency_all, annotations_all=None, title=None, fpa
 
 
 def plot_tradeoff_hue_fixed_mean(sw_all, consistency_all,
+                                 min_val, max_val,
+                                 colobar_title,
                                  annotations_title, title=None,
                                  fpath=None, palette="crest"):
     sns.set_style('whitegrid')
@@ -51,14 +54,18 @@ def plot_tradeoff_hue_fixed_mean(sw_all, consistency_all,
                        label=f'$\mu={mean}, \sigma^2={var}$'
                        )
     box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width * 0.88, box.height])
-    plt.xlabel('Consistency', fontsize=24)
-    plt.ylabel('Social welfare', fontsize=24)
+    # ax.set_position([box.x0, box.y0, box.width * 0.88, box.height])
+    plt.xlabel('Consistency', fontsize=22, labelpad=10)
+    plt.ylabel('Social welfare', fontsize=22, labelpad=20)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
     # ax.legend(title=annotations_title, bbox_to_anchor=(
     #     1.02, 1.12), loc=2, borderaxespad=0.)
-    fig.colorbar(cm.ScalarMappable(norm=matplotlib.colors.Normalize(0, 10),
-                                   cmap=maps[0]), ax=ax)
-    plt.title(title, fontsize=18)
+    cbar = fig.colorbar(cm.ScalarMappable(
+        norm=matplotlib.colors.Normalize(min_val, max_val),
+        cmap=maps[0]), ax=ax)
+    cbar.set_label(colobar_title, fontsize=18, rotation=0)
+    plt.title(title, fontsize=24, pad=20, fontweight='bold')
     if fpath is not None:
         os.makedirs(os.path.dirname(fpath), exist_ok=True)
         plt.tight_layout()
