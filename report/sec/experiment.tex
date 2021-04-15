@@ -1,5 +1,5 @@
 \section{Experiments}
-We empirically evaluate a few matching algorithms in different settings of utility and excitement initialization, and identify algorithms that can produce matches with high stability, high social welfare and high consistency.
+We first investigate the effect of different dynamics settings have on the performance. We then evaluate a few different matching algorithms to study the trade-off between stability, social welfare and consistency.
 \subsection{Experimental Set-up}
 % 0.5-1 page
 % \begin{itemize}
@@ -14,30 +14,31 @@ We empirically evaluate a few matching algorithms in different settings of utili
 %     \item Number of agents, time steps, etc.
 %     \item Evaluation set-up
 % \end{itemize}
-\paragraph{Dynamics Setting} For each agent, we independently initialize each utility value by sampling from a normal distribution $\mathcal{N}(\mu_u, \sigma_u^2)$ with scalar mean $\mu_u \in \mathbb{R}$ and variance $\sigma_u^2 \in \mathbb{R}$. For each utility value $x$, we clip it at 0 with $x \leftarrow \max(x, 0)$ to ensure it is non-negative. We further normalize the utilities such that each agent's utility vector has a total sum of 1. In addition, we set each agent's excitement values by again independently sampling from a normal distribution $\mathcal{N}(\mu_e, \sigma_e^2)$. We clip each excitement value at 0 to ensure that the excitement is non-negative.
+\paragraph{Dynamics Setting} For each agent, we independently initialize each utility value by sampling from a normal distribution $\mathcal{N}(\mu_u, \sigma_u^2)$ with scalar mean $\mu_u \in \mathbb{R}$ and variance $\sigma_u^2 \in \mathbb{R}$. For each utility value $x$, we clip it at 0 with $x \leftarrow \max(x, 0)$ to ensure it is non-negative. We further normalize the utilities such that each agent's utility vector has a total sum of 1. In addition, we independently sample each agent's excitement from a normal distribution $\mathcal{N}(\mu_e, \sigma_e^2)$. We clip the excitements at 0 such that the values are non-negative.
 
-\paragraph{Algorithms} We implement both the Men Proposing Deferred Acceptance (MPDA) and the Women Proposing Deferred Acceptance (WPDA) algorithms~\cite{galeshapley1962}, which are guaranteed to return a stable matching. In addition, we implement a family of deterministic algorithms (Det) and a family of probabilistic algorithms (Prob), described as follows.
+\paragraph{Algorithms} We implement both the Men Proposing Deferred Acceptance (MPDA) and the Women Proposing Deferred Acceptance (WPDA) algorithms~\cite{galeshapley1962}, which are guaranteed to return a stable matching. In addition, we implement a family of deterministic algorithms (Det) and a family of probabilistic algorithms (Prob, Prob-Stable), described as follows.
 
-\textit{\textbf{Det}}: This is a family of algorithms parameterized by $c \in [0, 1]$ and returns a perfect matching satisfying $$M^{t+1} = \argmax_{\mbox{consistency}(M^t, M) \ge c}{\mbox{sw}(M)}.$$
+\textit{\textbf{Det}}: This is a family of algorithms parameterized by $c \in [0, 1]$ and returns a perfect matching with $$M^{t+1} = \argmax_{\mbox{consistency}(M^t, M) \ge c}{\mbox{sw}(M)}.$$
 % In other words, the generated matching $M^{t+1}$ is the matching maximizing the social welfare subjected to the condition that the consistency is at least $c$ compared to the most recent match.
-For computational efficiency, we approximate this algorithm by first fixing $N * c$ couples in $M^t$ that have the highest social welfare according to the updated utilities $\overrightarrow{u}^{t+1}, \overrightarrow{v}^{t+1}$, and then perform the Hungarian Algorithm~\cite{Kuhn55thehungarian,Kuhn56thehungarian,Munkres1957Assignment} over the remaining men and women to obtain the maximum weight perfect bipartite matching, where the weight between a man node $m_i$ and a woman node $w_j$ is $u_i^{t+1}(w_j) + v_j^{t+1}(m_i)$. As a result, the generated new matching has at least consistency $c$ and a reasonably large social welfare.
+Solving for $M^{t+1}$ requires enumerating through all possible matching with consistency at least $c$. For computational efficiency, we perform the following approximation: we first identify and fix $N * c$ couples in $M^t$ that have the highest social welfare according to the updated utilities $\overrightarrow{u}^{t+1}$ and $\overrightarrow{v}^{t+1}$, and re-match the rest with the Hungarian Algorithm~\cite{Kuhn55thehungarian,Kuhn56thehungarian,Munkres1957Assignment} over the remaining men and women to obtain the maximum weight perfect bipartite matching, where the weight between a man node $m_i$ and a woman node $w_j$ in the bipartite graph is $u_i^{t+1}(w_j) + v_j^{t+1}(m_i)$. The generated new matching, which keeps at least the same $N*c$ couples from before, thus has consistency of at least $c$ and reasonably large social welfare.
 
 \textit{\textbf{Prob}}: This family of algorithms is parameterized by a probability value $p$ and finds a matching as follows:
 $$M^{t+1} = \begin{cases} \argmax_M{\mbox{sw}(M)} &\text{with probability $1-p$}\\ M^t &\text{with probability $p$}\end{cases}.$$
 As a result, the expected consistency is at least $p$. We find $\argmax_M{\mbox{sw}(M)}$ by running the Hungarian algorithm on the full bipartite graph.
 
-\textit{\textbf{Prob-Stable}} A variant of the probabilistic algorithm is to always return a maximum social welfare \textit{stable} matching $\argmax_{\text{stable $M$}}{\mbox{sw}(M)}$ with probability $1-p$. However, in the case where we keep the previous matching $M^t$, since $M^t$ might not be stable with the updated utilities, Prob-Stable is not guaranteed to have stable matches all the time.
+\textit{\textbf{Prob-Stable}} A variant of the probabilistic algorithm is to always return a \textit{stable} matching that has the maximum possible social welfare with probability $1-p$. However, in the case where we keep the previous matching $M^t$, since $M^t$ might not be stable with the updated utilities, Prob-Stable is not guaranteed to have stable matches all the time. One side note that it is infeasible to have the \textit{Det-Stable} variant, as stable matching might not exist for high consistency thresholds.
 
 
-\subsection{Results}
+\subsection{Results and Analysis}
 \input{figures/dynamics}
-\paragraph{Dynamics}
+\paragraph{Dynamics} We first perform an ablation study with various utilities and excitement initializations. We run MPDA in a few dynamics settings with varying $\sigma_u$, $\mu_e$ and $\sigma_e$. Fig.~\ref{fig:mpda_dynamics} illustrates the results. Note that $\mu_u$ has little significant since the utilities are normalized, hence we did not experiment with varying $\mu_u$. The results show that with a larger $\sigma_u$ leads to both higher social welfare and consistency, most likely due to the fact that agents start out more loyal to their top choices and therefore it takes longer for the preference profile to shift. In addition, larger $\mu_e$ and $\sigma_e$ result in more dynamical changes to the utilities, which generally causes smaller social welfare and consistency.
 
 \input{figures/algs}
-\paragraph{Algorithms} We run MPDA, WPDA, Det, Prob and Prob-Stable in the dynamics setting with $\mu_u = \sigma_u = 10$ and $\mu_e = \sigma_e = 0.1$. We choose this setting as the initialized utilities are diverse and the excitements are not too drastic. We experiment with $(N=20, T=10)$, $(N=20, T=100)$ and $(N=100, T=100)$ respectively.
+\input{figures/prob_stable}
+\paragraph{Algorithms} We next run MPDA, WPDA, Det, Prob and Prob-Stable in the dynamics setting with $\mu_u = \sigma_u = 10$ and $\mu_e = \sigma_e = 0.1$. We choose this setting since the initialized utilities are diverse and the excitements are not too drastic. We experiment with $(N=20, T=10)$, $(N=20, T=100)$ and $(N=100, T=100)$ respectively. Fig.~\ref{fig:algs} showcases the results of Det and Prob compared to MPDA and WPDA. For both Det and Prob, we see that a higher threshold of $c$ or $p$, which constrains the results to have a higher consistency, generally leads to smaller social welfare. Nevertheless, we observe that with $T=100$ total time steps, the social welfare peaks at around 0.6 consistency, which shows that putting a constraint on the marriage consistency leads to better long-term average social welfare than allowing agents to marry greedily according to their utilities at every time step. Furthermore, we show that with more agents and longer time horizon, the performance gap between MPDA/WPDA and Det/Prob increases in terms of both consistency and social welfare. This is likely due to the fact that with more agents and more time steps, it is harder for a matching to stay stable and achieve maximum social welfare. A perhaps more fair comparison is shown in Fig.~\ref{fig:prob-stable} with the Prob-Stable algorithm, where WPDA has a closer performance as Prob-Stable with $p=0$.
 
 \input{figures/det_stability.tex}
-\paragraph{Stability Social Welfare}
+\paragraph{Stability vs. Social Welfare} We also evaluate the stability of Det. Fig.~\ref{fig:det-stability} shows that high social welfare is generally correlated with low instability. However, matching with maximum social welfare is still unstable, and a stable matching can have a much lower social welfare compared to the maximum.
 % 0.5 - 1 page
 % Figures and analysis
 % \begin{itemize}

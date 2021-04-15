@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsthm}
 \usepackage{amssymb}
@@ -12,20 +12,25 @@
 \usepackage[normalem]{ulem}
 \usepackage{color}
 \usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{wrapfig}
 \usepackage{titlesec}
+\usepackage[margin=1.0in]{geometry}
+\usepackage[font=small,labelfont=bf]{caption}
 \graphicspath{figures/}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
+
 \title{Dynamic Stable Matching}
 \author{Yunlin (Ilene) Lu\footnote{Equal Contribution} $\qquad$ Mathieu Tuli${}^*$ $\qquad$ Anqi (Joyce) Yang${}^*$}
-\date{April 2021}
+% \date{April 2021}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{10pt}
-\titlespacing*{\section}{0pt}{0.5\baselineskip}{0.5\baselineskip}
-\titlespacing*{\subsection}{0pt}{0.5\baselineskip}{0.5\baselineskip}
-\titlespacing*{\paragraph}{0pt}{0.5\baselineskip}{0.5\baselineskip}
+\titlespacing*{\section}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+\titlespacing*{\subsection}{0pt}{0.25\baselineskip}{0.25\baselineskip}
+\titlespacing*{\paragraph}{0pt}{0.25\baselineskip}{0.25\baselineskip}
 
 \begin{document}
 
@@ -47,7 +52,7 @@
 % \section{Dicussion}
 % \subfile{sec/discussion}
 
-\vspace{-8mm}
+\vspace{-12mm}
 \input{sec/intro}
 \input{sec/related}
 \input{sec/problem}
