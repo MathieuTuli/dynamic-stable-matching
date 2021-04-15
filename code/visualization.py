@@ -16,7 +16,7 @@ def plot_tradeoff(sw_all, consistency_all, annotations_all=None, title=None, fpa
         ax.scatter(consistency, sw)
         ax.annotate(text, (consistency, sw))
     ax.set_xlabel("Consistency")
-    ax.set_ylabel("Mean social welfare")
+    ax.set_ylabel("Social Welfare")
     plt.title(title)
     plt.tight_layout()
     if fpath is not None:
@@ -39,7 +39,7 @@ def plot_tradeoff_hue(sw_all, consistency_all, annotations_all, annotations_titl
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.88, box.height])
     plt.xlabel('Consistency', fontsize=24)
-    plt.ylabel('Mean social welfare', fontsize=24)
+    plt.ylabel('Social Welfare', fontsize=24)
     # g.ax.margins(.15)
     # g.legend.set_title(annotations_title)
     # g.fig.set_size_inches(7, 4.5)
@@ -63,7 +63,7 @@ def plot_relationship(sw_all, consistency_all, annotations_all, annotations_titl
     # for sw, consistency, text in zip(sw_all, consistency_all, annotations_all):
     #     ax.scatter(consistency, sw)
     p1 = ax.scatter(x=annotations_all, y=sw_all,
-                    color='#7798AB', label='Mean social welfare')
+                    color='#7798AB', label='Social Welfare')
     ax2 = plt.twinx()
     p2 = ax2.scatter(x=annotations_all, y=consistency_all,
                      color='#D17B0F', label='Consistency')
@@ -80,7 +80,7 @@ def plot_relationship(sw_all, consistency_all, annotations_all, annotations_titl
     ax.legend(ps, labels, bbox_to_anchor=(1.1, 1), loc=2, borderaxespad=0.)
 
     ax.set_xlabel(annotations_title)
-    ax.set_ylabel('Mean social welfare')
+    ax.set_ylabel('Social Welfare')
     ax2.set_ylabel('Consistency')
 
     plt.title(title, fontsize=18)
@@ -95,7 +95,7 @@ def plot_relationship(sw_all, consistency_all, annotations_all, annotations_titl
 def plot_tradeoff_hue_extra(
     sw_all, consistency_all, annotations_all, annotations_title,
     sw_extra, consistency_extra, labels_extra, colors_extra,
-    xlabel="Consistency", ylabel="Mean Social Welfare",
+    xlabel="Consistency", ylabel="Social Welfare",
     title=None, fpath=None, palette="crest"
 ):
     sns.set_style('whitegrid')
