@@ -1,4 +1,5 @@
 \section{Experiments}
+We empirically evaluate a few matching algorithms in different settings of utility and excitement initialization, and identify algorithms that can produce matches with high stability, high social welfare and high consistency.
 \subsection{Experimental Set-up}
 % 0.5-1 page
 % \begin{itemize}
@@ -13,28 +14,40 @@
 %     \item Number of agents, time steps, etc.
 %     \item Evaluation set-up
 % \end{itemize}
-\paragraph{Dynamics Setting} For each agent, we independently initialize each utility value by sampling from a normal distribution $\mathcal{N}(\mu_1, \sigma_1^2)$ with scalar mean $\mu_1 \in \mathbb{R}$ and variance $\sigma_1^2 \in \mathbb{R}$. We further normalize the utilities such that each agent's utility vector has a total sum of 1. In addition, we set each agent's excitement values by again independently sampling from a normal distribution $\mathcal{N}(\mu_2, \sigma_2^2)$. We clip each excitement value at 0 to ensure that the excitement is non-negative.
+\paragraph{Dynamics Setting} For each agent, we independently initialize each utility value by sampling from a normal distribution $\mathcal{N}(\mu_1, \sigma_1^2)$ with scalar mean $\mu_1 \in \mathbb{R}$ and variance $\sigma_1^2 \in \mathbb{R}$. For each utility value $x$, we clip it at 0 with $x \leftarrow \max(x, 0)$ to ensure it is non-negative. We further normalize the utilities such that each agent's utility vector has a total sum of 1. In addition, we set each agent's excitement values by again independently sampling from a normal distribution $\mathcal{N}(\mu_2, \sigma_2^2)$. We clip each excitement value at 0 to ensure that the excitement is non-negative.
 
 \paragraph{Algorithms} We implement both the Men Proposing Deferred Acceptance (MPDA) and the Women Proposing Deferred Acceptance (WPDA) algorithms, which are guaranteed to return a stable matching. In addition, we implement a family of deterministic algorithms (Det) and a family of probabilistic algorithms (Prob), described as follows.
 
-Det: This is a family of algorithms parameterized by $c \in [0, 1]$ and returns a perfect matching satisfying $$M^{t+1} = \argmax_{\mbox{consistency}(M^t, M) \ge c}{\mbox{sw}(M)}.$$ In other words, the generated matching $M^{t+1}$ is the matching maximizing the social welfare subjected to the condition that the consistency is at least $c$ compared to the most recent match. For computational efficiency, instead of enumerating through all possible matching that has at least consistency $c$, we approximate by fixing $N * c$ couples in $M^t$ that have the highest social welfare according to the updated utilities $\overrightarrow{u}^{t+1}, \overrightarrow{v}^{t+1}$, and then perform the Hungarian Algorithm~\cite{Kuhn55thehungarian,Kuhn56thehungarian,Munkres1957Assignment} over the remaining men and women to obtain the maximum weight perfect bipartite matching, with the weight between a man node $m_i$ and a woman node $w_j$ being $u_i^{t+1}(w_j) + v_j^{t+1}(m_i)$. As a result, the generated new matching has at least consistency $c$ and a reasonably large social welfare.
+\textit{\textbf{Det}}: This is a family of algorithms parameterized by $c \in [0, 1]$ and returns a perfect matching satisfying $$M^{t+1} = \argmax_{\mbox{consistency}(M^t, M) \ge c}{\mbox{sw}(M)}.$$
+% In other words, the generated matching $M^{t+1}$ is the matching maximizing the social welfare subjected to the condition that the consistency is at least $c$ compared to the most recent match.
+For computational efficiency, we approximate this algorithm by first fixing $N * c$ couples in $M^t$ that have the highest social welfare according to the updated utilities $\overrightarrow{u}^{t+1}, \overrightarrow{v}^{t+1}$, and then perform the Hungarian Algorithm~\cite{Kuhn55thehungarian,Kuhn56thehungarian,Munkres1957Assignment} over the remaining men and women to obtain the maximum weight perfect bipartite matching, with the weight between a man node $m_i$ and a woman node $w_j$ as $u_i^{t+1}(w_j) + v_j^{t+1}(m_i)$. As a result, the generated new matching has at least consistency $c$ and a reasonably large social welfare.
 
+\textit{\textbf{Prob}}: This family of algorithms is parameterized by a probability value $p$ and finds a matching as follows:
+$$M^{t+1} = \begin{cases} \argmax_M{\mbox{sw}(M)} &\text{with probability $p$}\\ M^t &\text{with probability $1-p$}\end{cases}.$$
+As a result, the expected consistency is at least $1-p$. We find $\argmax_M{\mbox{sw}(M)}$ by running the Hungarian algorithm on the full bipartite graph.
+
+\textit{\textbf{Prob-Stable}} Note that the maximum social welfare matching is not necessarily stable. To ensure stability, a variant of the probabilistic algorithm is to always return a maximum social welfare \textit{stable} matching $\argmax_{\text{stable $M$}}{\mbox{sw}(M)}$ with probability $p$. However, in the case where we keep the previous matching $M^t$, since $M^t$ might not be stable with the updated utilities, Prob-Stable is not guaranteed to have stable matches all the time.
 
 
 \subsection{Results}
-0.5 - 1 page
-Figures and analysis
-\begin{itemize}
-    \item Evaluation of the algorithms (trade-off plot)
-    \begin{itemize}
-        \item scatter plot for the algorithm family
-        \item variance plot for the algorithm family
-    \end{itemize}
-    \item Evaluation with various dynamics
-    \begin{itemize}
-        \item Plot the trade off curve with MPDA and update with match
-    \end{itemize}
-\end{itemize}
+\paragraph{Dynamics}
+
+\paragraph{Algorithms}
+
+\paragraph{Stability Social Welfare}
+% 0.5 - 1 page
+% Figures and analysis
+% \begin{itemize}
+%     \item Evaluation of the algorithms (trade-off plot)
+%     \begin{itemize}
+%         \item scatter plot for the algorithm family
+%         \item variance plot for the algorithm family
+%     \end{itemize}
+%     \item Evaluation with various dynamics
+%     \begin{itemize}
+%         \item Plot the trade off curve with MPDA and update with match
+%     \end{itemize}
+% \end{itemize}
 
 \begin{figure}
     \centering

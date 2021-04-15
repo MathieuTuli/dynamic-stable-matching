@@ -27,7 +27,8 @@ from match import deterministic, is_stable, MPDA, WPDA, get_num_blocking
 def main():
     seed = 1000
 
-    horizon = 10
+    # horizon = 10
+    horizon = 100
     # size = 10
     size = 100
     
@@ -161,7 +162,7 @@ def main():
         annotations_all, "consistency threshold",
         results_extra[:, 0], [0, 0],
         labels_extra, colors_extra,
-        xlabel="Mean Instability",
+        xlabel="Instability",
         title=f"Det (N={size}, T={horizon})")
     # plot_tradeoff(results_all[:, 0], results_all[:, 1], annotations_all=annotations_all, title=f"N={size} Time Steps={horizon} Guarantee Stability={guarantee_stability}")
     
