@@ -28,11 +28,11 @@ from match import deterministic, is_stable, MPDA, WPDA, get_num_blocking
 def main():
     seed = 1000
 
-    # horizon = 10
-    horizon = 100
+    horizon = 10
+    # horizon = 100
     # size = 10
-    size = 100
-    # size = 20
+    # size = 100
+    size = 20
     
     men = [Man() for i in range(size)]
     women = [Woman() for i in range(size)]

@@ -153,7 +153,7 @@ def plot_tradeoff_hue_extra(
     # for sw, consistency, text in zip(sw_all, consistency_all, annotations_all):
     #     ax.scatter(consistency, sw)
     g = sns.scatterplot(x=consistency_all, y=sw_all,
-                        hue=annotations_all, palette=palette, ax=ax, s=100, legend="brief")
+                        hue=annotations_all, palette=palette, ax=ax, s=200, legend="brief")
     ylim_min = np.min(list(sw_all) + list(sw_extra))
     if ylim_min < 0.01:
         ylim_min = -0.005
@@ -172,7 +172,7 @@ def plot_tradeoff_hue_extra(
     # g.ax.margins(.15)
 
     for consistency, sw, label, color in zip(consistency_extra, sw_extra, labels_extra, colors_extra):
-        g.scatter(consistency, sw, s=100, color=color, marker="x", label=label)
+        g.scatter(consistency, sw, s=200, color=color, marker="x", label=label)
     # ax.legend()
     lgd = ax.legend(title=annotations_title, bbox_to_anchor=(
         1.03, 1), loc=2, borderaxespad=0., fontsize=15)
